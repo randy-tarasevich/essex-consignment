@@ -41,7 +41,7 @@ npm run preview:worker           # http://localhost:8787
 | `SHOPIFY_ADMIN_TOKEN` | Admin API token with `read_customers` + `write_customers` |
 | or `SHOPIFY_CLIENT_ID` / `SHOPIFY_CLIENT_SECRET` | if the app gives a client ID/secret instead of a token |
 | `TURNSTILE_SECRET_KEY` | Turnstile widget secret |
-| `WEB3FORMS_ACCESS_KEY` | notification email (optional) |
+| `WEB3FORMS_ACCESS_KEY` | notification email; public key, set in `wrangler.jsonc` `vars` (dev: info@ inbox) |
 
 Build variable (public): `PUBLIC_TURNSTILE_SITE_KEY`.
 
