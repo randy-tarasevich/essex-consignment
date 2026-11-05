@@ -8,7 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "preview:worker": "astro build && wrangler dev"
+    "preview:worker": "PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA astro build && wrangler dev"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

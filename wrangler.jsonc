@@ -13,11 +13,5 @@
     // Only API requests run the Worker; everything else is served straight from ./dist
     "run_worker_first": ["/api/*"]
   },
-  "observability": { "enabled": true },
-  // Public, non-secret settings. (Secrets like TURNSTILE_SECRET_KEY and Shopify tokens go in the dashboard.)
-  "vars": {
-    // Web3Forms "Essex Consignment" form: sends to info@shorelinewebsolutionsct.com during development.
-    // Switch to a key that sends to al@essexconsignment.com at launch.
-    "WEB3FORMS_ACCESS_KEY": "154ab7cf-7f4c-4172-b72c-3974e1ad6648"
-  }
+  "observability": { "enabled": true }
 }

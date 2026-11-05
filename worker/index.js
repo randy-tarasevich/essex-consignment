@@ -6,17 +6,17 @@
 // Flow: spam check (honeypot + Cloudflare Turnstile) → find or create the
 // Shopify customer by email → add tag "website-contact" or "consignor" →
 // save the message in the customer note → set email-marketing consent if
-// the box was ticked → send an email notification.
+// the box was ticked. The email notification is sent from the visitor's
+// browser (Web3Forms free plan only accepts browser submissions), using the
+// `saved` flag this endpoint returns.
 //
 // Secrets (Cloudflare dashboard → Settings → Variables and Secrets, or .dev.vars locally):
 //   SHOPIFY_STORE_DOMAIN       e.g. essex-consignment.myshopify.com
 //   SHOPIFY_ADMIN_TOKEN        Admin API token with write_customers
 //     or SHOPIFY_CLIENT_ID + SHOPIFY_CLIENT_SECRET (Dev Dashboard app, client-credentials grant)
 //   TURNSTILE_SECRET_KEY       Cloudflare Turnstile secret
-//   WEB3FORMS_ACCESS_KEY       Web3Forms key for the email notification (optional)
 // Optional:
 //   SHOPIFY_API_VERSION        default 2026-10
-//   NOTIFY_FROM_NAME           default "Essex Consignment website"
 
 const TAGS = { contact: 'website-contact', consignor: 'consignor' };
 const MAX = { name: 80, email: 254, phone: 40, message: 4000 };
@@ -37,9 +37,9 @@ export default {
 async function handleInquiry(request, env, ctx) {
   const wantsJson = (request.headers.get('accept') || '').includes('application/json');
   const origin = new URL(request.url).origin;
-  const respond = (ok, status, message, type) =>
+  const respond = (ok, status, message, type, extra = {}) =>
     wantsJson
-      ? json({ ok, message }, status)
+      ? json({ ok, message, ...extra }, status)
       : Response.redirect(`${origin}${ok ? `/thank-you/?type=${type}` : `/contact/?error=1`}`, 303);
 
   let form;
@@ -60,18 +60,21 @@ async function handleInquiry(request, env, ctx) {
   const human = await verifyTurnstile(env, str(form.get('cf-turnstile-response')), ip);
   if (!human) return respond(false, 403, 'Spam check failed. Please try again.');
 
-  let result;
   try {
-    result = await saveToShopify(env, data);
+    const result = await saveToShopify(env, data);
+    return respond(true, 200, 'Thanks! We received your message and will be in touch soon.', data.type, {
+      saved: true,
+      action: result.action,
+      tag: data.tag,
+    });
   } catch (err) {
     console.error('[inquiry] Shopify error:', err.message);
-    // Still try to notify so the lead isn't lost.
-    ctx.waitUntil(notify(env, data, { failed: true, error: err.message }));
-    return respond(false, 502, 'Sorry, something went wrong sending your message. Please call us at (860) 767-9741.');
+    // The browser still sends the email notification (saved: false), so the lead isn't lost.
+    return respond(false, 502, 'Sorry, something went wrong sending your message. Please call us at (860) 767-9741.', data.type, {
+      saved: false,
+      tag: data.tag,
+    });
   }
-
-  ctx.waitUntil(notify(env, data, result));
-  return respond(true, 200, 'Thanks! We received your message and will be in touch soon.', data.type);
 }
 
 function str(v) {
@@ -218,40 +221,6 @@ export async function saveToShopify(env, d) {
     userErrors(out.customerEmailMarketingConsentUpdate);
   }
   return { action: 'updated', id: existing.id };
-}
-
-// ---------- notification ----------
-
-async function notify(env, d, result) {
-  if (!env.WEB3FORMS_ACCESS_KEY) {
-    console.warn('[inquiry] WEB3FORMS_ACCESS_KEY not set; no email notification sent');
-    return;
-  }
-  const label = d.type === 'consignor' ? 'New consignment inquiry' : 'New website message';
-  const status = result.failed
-    ? `NOT saved to Shopify (${result.error}). Please add this person by hand.`
-    : `Saved to Shopify (${result.action}, tagged "${d.tag}").`;
-  try {
-    const res = await fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({
-        access_key: env.WEB3FORMS_ACCESS_KEY,
-        subject: `${label} from ${d.firstName} ${d.lastName}`,
-        from_name: env.NOTIFY_FROM_NAME || 'Essex Consignment website',
-        replyto: d.email,
-        name: `${d.firstName} ${d.lastName}`,
-        email: d.email,
-        phone: d.phone || '(not given)',
-        message: d.message,
-        email_updates: d.acceptsMarketing ? 'Yes' : 'No',
-        shopify: status,
-      }),
-    });
-    if (!res.ok) console.error('[inquiry] Notification failed:', res.status);
-  } catch (err) {
-    console.error('[inquiry] Notification error:', err.message);
-  }
 }
 
 function json(body, status = 200) {

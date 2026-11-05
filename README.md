@@ -31,7 +31,7 @@ npm run preview:worker           # http://localhost:8787
 2. Finds the Shopify customer by email, or creates one
 3. Adds the tag `website-contact` or `consignor`, and appends the message to the customer note
 4. Marks them subscribed to email marketing only if they ticked the box
-5. Sends an email notification via Web3Forms (also sent if Shopify is down, so no lead is lost)
+5. The visitor's browser then sends the email notification via Web3Forms (free plan only accepts browser submissions). If Shopify is down, the email still goes out, marked "NOT saved to Shopify". Visitors without JavaScript get the thank-you page but no email.
 
 ### Worker secrets (Cloudflare → essex-consignment → Settings → Variables and Secrets)
 
@@ -41,9 +41,8 @@ npm run preview:worker           # http://localhost:8787
 | `SHOPIFY_ADMIN_TOKEN` | Admin API token with `read_customers` + `write_customers` |
 | or `SHOPIFY_CLIENT_ID` / `SHOPIFY_CLIENT_SECRET` | if the app gives a client ID/secret instead of a token |
 | `TURNSTILE_SECRET_KEY` | Turnstile widget secret |
-| `WEB3FORMS_ACCESS_KEY` | notification email; public key, set in `wrangler.jsonc` `vars` (dev: info@ inbox) |
 
-Build variable (public): `PUBLIC_TURNSTILE_SITE_KEY`.
+Public keys live in `src/components/InquiryForm.astro` (Turnstile site key, Web3Forms access key); override with `PUBLIC_TURNSTILE_SITE_KEY` / `PUBLIC_WEB3FORMS_ACCESS_KEY` build variables.
 
 ## Pages (from the proposal)
 

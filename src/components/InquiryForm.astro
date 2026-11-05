@@ -10,9 +10,12 @@ const isConsignor = type === 'consignor';
 const TURNSTILE_SITE_KEY = '0x4AAAAAAF05rsXl12KtrHVR';
 const TURNSTILE_TEST_KEY = '1x00000000000000000000AA';
 const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || (import.meta.env.DEV ? TURNSTILE_TEST_KEY : TURNSTILE_SITE_KEY);
+// Web3Forms "Essex Consignment" form (public key). Sends to info@shorelinewebsolutionsct.com during
+// development; switch to a key that sends to al@essexconsignment.com at launch.
+const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || '154ab7cf-7f4c-4172-b72c-3974e1ad6648';
 const field = 'mt-1 w-full rounded border border-burgundy-100 bg-white px-3 py-2 font-normal';
 ---
-<form class="inquiry-form space-y-4 max-w-xl" method="post" action="/api/inquiry" novalidate>
+<form class="inquiry-form space-y-4 max-w-xl" method="post" action="/api/inquiry" data-notify-key={web3formsKey} novalidate>
   <input type="hidden" name="type" value={type} />
 
   <!-- Honeypot: hidden from people, filled in by bots -->
@@ -53,6 +56,38 @@ const field = 'mt-1 w-full rounded border border-burgundy-100 bg-white px-3 py-2
 {siteKey && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
 
 <script>
+  // Sends the email notification from the browser (Web3Forms free plan only accepts browser submissions).
+  async function notify(form, data, saved) {
+    const key = form.dataset.notifyKey;
+    if (!key) return false;
+    const consignor = data.get('type') === 'consignor';
+    const name = `${data.get('firstName')} ${data.get('lastName')}`.trim();
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: key,
+          subject: `${consignor ? 'New consignment inquiry' : 'New website message'} from ${name}`,
+          from_name: 'Essex Consignment website',
+          replyto: data.get('email'),
+          name,
+          email: data.get('email'),
+          phone: data.get('phone') || '(not given)',
+          message: data.get('message'),
+          email_updates: data.get('acceptsMarketing') ? 'Yes' : 'No',
+          shopify: saved
+            ? `Saved to Shopify (tagged "${consignor ? 'consignor' : 'website-contact'}").`
+            : 'NOT saved to Shopify. Please add this person by hand.',
+        }),
+      });
+      const out = await res.json().catch(() => ({}));
+      return res.ok && out.success !== false;
+    } catch {
+      return false;
+    }
+  }
+
   for (const form of document.querySelectorAll('form.inquiry-form')) {
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -62,27 +97,35 @@ const field = 'mt-1 w-full rounded border border-burgundy-100 bg-white px-3 py-2
         form.reportValidity();
         return;
       }
+      const show = (ok, text) => {
+        status.className = `form-status text-sm font-semibold ${ok ? 'text-green-800' : 'text-red-700'}`;
+        status.textContent = text;
+      };
       button.disabled = true;
       status.className = 'form-status text-sm';
       status.textContent = 'Sending…';
+      const data = new FormData(form);
       try {
-        const res = await fetch(form.action, {
-          method: 'POST',
-          body: new FormData(form),
-          headers: { Accept: 'application/json' },
-        });
+        const res = await fetch(form.action, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
         const out = await res.json().catch(() => ({}));
         if (res.ok && out.ok) {
+          await notify(form, data, true);
           form.reset();
-          status.className = 'form-status text-sm font-semibold text-green-800';
-          status.textContent = out.message || 'Thanks! We will be in touch soon.';
+          show(true, out.message || 'Thanks! We will be in touch soon.');
+        } else if (out.saved === false) {
+          // Shopify was unavailable: the email still delivers the inquiry.
+          const emailed = await notify(form, data, false);
+          if (emailed) {
+            form.reset();
+            show(true, 'Thanks! We received your message and will be in touch soon.');
+          } else {
+            show(false, out.message || 'Something went wrong. Please call us at (860) 767-9741.');
+          }
         } else {
-          status.className = 'form-status text-sm font-semibold text-red-700';
-          status.textContent = out.message || 'Something went wrong. Please call us at (860) 767-9741.';
+          show(false, out.message || 'Something went wrong. Please call us at (860) 767-9741.');
         }
       } catch {
-        status.className = 'form-status text-sm font-semibold text-red-700';
-        status.textContent = 'Could not send. Please check your connection or call us at (860) 767-9741.';
+        show(false, 'Could not send. Please check your connection or call us at (860) 767-9741.');
       } finally {
         button.disabled = false;
         window.turnstile?.reset?.();
