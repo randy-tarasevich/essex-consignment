@@ -1,0 +1,37 @@
+---
+// Shared form for Contact and Consign With Us.
+// Phase 1 placeholder: submits nowhere yet.
+// Plan: POST to a Cloudflare Worker that creates/updates a Shopify customer,
+// tagged "website-contact" or "consignor", with marketing consent,
+// Cloudflare Turnstile spam protection, and an email notification.
+const { type = 'contact' } = Astro.props; // 'contact' | 'consignor'
+const isConsignor = type === 'consignor';
+---
+<form class="space-y-4 max-w-xl" method="post" action="#" data-form-type={type}>
+  <input type="hidden" name="tag" value={isConsignor ? 'consignor' : 'website-contact'} />
+  <div class="grid gap-4 sm:grid-cols-2">
+    <label class="block text-sm font-semibold">First name
+      <input name="firstName" required autocomplete="given-name" class="mt-1 w-full rounded border border-burgundy-100 bg-white px-3 py-2 font-normal" />
+    </label>
+    <label class="block text-sm font-semibold">Last name
+      <input name="lastName" required autocomplete="family-name" class="mt-1 w-full rounded border border-burgundy-100 bg-white px-3 py-2 font-normal" />
+    </label>
+  </div>
+  <label class="block text-sm font-semibold">Email
+    <input type="email" name="email" required autocomplete="email" class="mt-1 w-full rounded border border-burgundy-100 bg-white px-3 py-2 font-normal" />
+  </label>
+  <label class="block text-sm font-semibold">Phone
+    <input type="tel" name="phone" autocomplete="tel" class="mt-1 w-full rounded border border-burgundy-100 bg-white px-3 py-2 font-normal" />
+  </label>
+  <label class="block text-sm font-semibold">{isConsignor ? 'What would you like to consign?' : 'Message'}
+    <textarea name="message" rows="5" required class="mt-1 w-full rounded border border-burgundy-100 bg-white px-3 py-2 font-normal"></textarea>
+  </label>
+  <label class="flex items-start gap-2 text-sm">
+    <input type="checkbox" name="acceptsMarketing" class="mt-1" />
+    <span>Email me about new arrivals and shop news.</span>
+  </label>
+  <!-- TODO: Cloudflare Turnstile widget -->
+  <button type="submit" class="rounded-full bg-burgundy-700 px-6 py-3 font-semibold text-white hover:bg-burgundy-800">
+    {isConsignor ? 'Send consignment inquiry' : 'Send message'}
+  </button>
+</form>

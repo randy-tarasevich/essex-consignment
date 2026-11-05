@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+
+// Announcements are updated by SWS on request (no CMS in scope).
+const announcements = [
+  // { date: '2027-01-01', title: 'New website!', body: '...' },
+];
+---
+<BaseLayout title="Announcements" description="News, events, and sales from Essex Consignment.">
+  <PageHeader title="Announcements" intro="News, events, and sales from the shop." />
+  <section class="mx-auto max-w-3xl px-4 py-12">
+    {announcements.length === 0
+      ? <p>No announcements right now. Check back soon.</p>
+      : <ul class="space-y-8">
+          {announcements.map((a) => (
+            <li>
+              <time datetime={a.date} class="text-sm text-burgundy-600">{a.date}</time>
+              <h2 class="text-2xl font-bold">{a.title}</h2>
+              <p class="mt-2">{a.body}</p>
+            </li>
+          ))}
+        </ul>}
+  </section>
+</BaseLayout>

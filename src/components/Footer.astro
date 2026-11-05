@@ -1,0 +1,23 @@
+---
+import { site, nav } from '../data/site.js';
+const year = new Date().getFullYear();
+---
+<footer class="bg-burgundy-900 text-burgundy-100">
+  <div class="mx-auto max-w-6xl px-4 py-10 grid gap-8 sm:grid-cols-3">
+    <div>
+      <p class="font-serif text-xl text-white">{site.name}</p>
+      <p class="mt-2 text-sm">{site.tagline}</p>
+    </div>
+    <address class="not-italic text-sm space-y-1">
+      <p>{site.address.street}</p>
+      <p>{site.address.city}, {site.address.region} {site.address.postalCode}</p>
+      <p><a href={site.phoneHref} class="hover:text-white">{site.phone}</a></p>
+      <p><a href={`mailto:${site.email}`} class="hover:text-white">{site.email}</a></p>
+      <p>Hours: {site.hours}</p>
+    </address>
+    <ul class="text-sm space-y-1">
+      {nav.map((item) => <li><a href={item.href} class="hover:text-white">{item.label}</a></li>)}
+    </ul>
+  </div>
+  <p class="border-t border-burgundy-800 py-4 text-center text-xs">© {year} {site.name}. All rights reserved.</p>
+</footer>

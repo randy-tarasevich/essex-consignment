@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import InquiryForm from '../components/InquiryForm.astro';
+---
+<BaseLayout title="Consign With Us" description="Consign furniture, antiques, art, jewelry, and collectibles with Essex Consignment. We sell for the highest price.">
+  <PageHeader title="Consign With Us" intro="We sell your items for the highest price and give you the best return in the business." />
+  <section class="mx-auto max-w-6xl px-4 py-12 grid gap-12 lg:grid-cols-2">
+    <div class="space-y-8">
+      <div>
+        <h2 class="text-2xl font-bold">What we accept</h2>
+        <p class="mt-2"><!-- TODO: from kickoff sheet --> Furniture, antiques, art, jewelry, collectibles and more. Full list coming from the kickoff sheet.</p>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold">How drop-off works</h2>
+        <p class="mt-2"><!-- TODO: from kickoff sheet --> Details coming from the kickoff sheet.</p>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold">Terms</h2>
+        <p class="mt-2"><!-- TODO: commission split, floor time, payout timing, unsold items --> Details coming from the kickoff sheet.</p>
+      </div>
+    </div>
+    <div>
+      <h2 class="text-2xl font-bold">Start a consignment</h2>
+      <div class="mt-4"><InquiryForm type="consignor" /></div>
+    </div>
+  </section>
+</BaseLayout>

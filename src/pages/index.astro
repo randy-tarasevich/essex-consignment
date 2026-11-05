@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FeaturedGallery from '../components/FeaturedGallery.astro';
+import { site } from '../data/site.js';
+---
+<BaseLayout>
+  <section class="bg-burgundy-800 text-white">
+    <div class="mx-auto max-w-6xl px-4 py-20 text-center">
+      <p class="text-sm uppercase tracking-widest text-gold">Estate furniture &amp; objets d'art · Essex, CT</p>
+      <h1 class="mt-4 text-4xl sm:text-6xl font-bold text-white">From ash trays to rare art</h1>
+      <p class="mx-auto mt-6 max-w-2xl text-lg text-burgundy-100">{site.tagline} 24 years as a top-rated eBay seller, with buyers worldwide.</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <a href={site.shopUrl || '#featured-heading'} class="rounded-full bg-white px-6 py-3 font-semibold text-burgundy-800 hover:bg-cream">Shop now</a>
+        <a href="/consign/" class="rounded-full border border-white px-6 py-3 font-semibold hover:bg-burgundy-700">Consign with us</a>
+      </div>
+    </div>
+  </section>
+  <FeaturedGallery />
+  <!-- TODO: what we accept / sales results highlights (confirm with Al which current-site content to keep) -->
+</BaseLayout>

@@ -1,0 +1,34 @@
+---
+// Featured items from the Shopify "Featured" collection (up to 10, available items only).
+// Phase 1 placeholder: renders sample cards until the Storefront API is connected.
+// Plan: fetch collection(handle: "featured") via the Storefront API at build time,
+// filter availableForSale, and link each card to its Shopify product page.
+// A Shopify webhook will trigger a Cloudflare rebuild when items change.
+const storeDomain = import.meta.env.PUBLIC_SHOPIFY_STORE_DOMAIN;
+const token = import.meta.env.PUBLIC_SHOPIFY_STOREFRONT_TOKEN;
+const connected = Boolean(storeDomain && token);
+
+const items = Array.from({ length: 6 }, (_, i) => ({
+  title: `Featured item ${i + 1}`,
+  price: '$—',
+  url: '#',
+}));
+---
+<section class="mx-auto max-w-6xl px-4 py-16" aria-labelledby="featured-heading">
+  <div class="flex items-end justify-between gap-4">
+    <h2 id="featured-heading" class="text-3xl font-bold">Featured Items</h2>
+    {!connected && <p class="text-xs text-burgundy-600">Preview: Shopify not connected yet</p>}
+  </div>
+  <ul class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {items.map((item) => (
+      <li class="rounded-lg bg-white shadow-sm ring-1 ring-burgundy-100 overflow-hidden">
+        <div class="aspect-square bg-burgundy-50" aria-hidden="true"></div>
+        <div class="p-4">
+          <h3 class="font-sans text-base font-semibold text-ink">{item.title}</h3>
+          <p class="mt-1 text-sm">{item.price}</p>
+          <a href={item.url} class="mt-3 inline-block text-sm font-semibold text-burgundy-700 hover:underline">Shop now →</a>
+        </div>
+      </li>
+    ))}
+  </ul>
+</section>

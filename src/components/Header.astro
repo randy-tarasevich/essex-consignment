@@ -1,0 +1,25 @@
+---
+import { site, nav } from '../data/site.js';
+const current = Astro.url.pathname;
+---
+<header class="bg-white border-b border-burgundy-100">
+  <div class="mx-auto max-w-6xl px-4 py-4 flex flex-wrap items-center justify-between gap-4">
+    <a href="/" class="font-serif text-2xl font-bold text-burgundy-700">{site.name}</a>
+    <nav aria-label="Main">
+      <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
+        {nav.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class:list={['hover:text-burgundy-600', current === item.href && 'text-burgundy-700 underline underline-offset-4']}
+              aria-current={current === item.href ? 'page' : undefined}
+            >{item.label}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <a href={site.phoneHref} class="rounded-full bg-burgundy-700 px-4 py-2 text-sm font-semibold text-white hover:bg-burgundy-800">
+      {site.phone}
+    </a>
+  </div>
+</header>
