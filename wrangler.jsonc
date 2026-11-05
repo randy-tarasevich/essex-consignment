@@ -2,6 +2,9 @@
 {
   "name": "essex-consignment",
   "compatibility_date": "2026-11-01",
+  // Public staging URL (essex-consignment.<subdomain>.workers.dev) and per-branch preview URLs
+  "workers_dev": true,
+  "preview_urls": true,
   "assets": {
     "directory": "./dist",
     "not_found_handling": "404-page"
