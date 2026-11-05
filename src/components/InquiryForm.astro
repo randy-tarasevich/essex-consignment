@@ -5,7 +5,11 @@
 // Works without JavaScript (redirects to /thank-you/); with JavaScript it shows the result inline.
 const { type = 'contact' } = Astro.props; // 'contact' | 'consignor'
 const isConsignor = type === 'consignor';
-const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+// Turnstile site key is public. Real key covers essexconsignment.com + the workers.dev staging URL;
+// local dev uses Cloudflare's always-pass test key so the widget works on localhost.
+const TURNSTILE_SITE_KEY = '0x4AAAAAAF05rsXl12KtrHVR';
+const TURNSTILE_TEST_KEY = '1x00000000000000000000AA';
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || (import.meta.env.DEV ? TURNSTILE_TEST_KEY : TURNSTILE_SITE_KEY);
 const field = 'mt-1 w-full rounded border border-burgundy-100 bg-white px-3 py-2 font-normal';
 ---
 <form class="inquiry-form space-y-4 max-w-xl" method="post" action="/api/inquiry" novalidate>
