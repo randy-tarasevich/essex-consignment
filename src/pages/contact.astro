@@ -16,6 +16,10 @@ import { site } from '../data/site.js';
     </div>
     <div>
       <h2 class="text-2xl font-bold">Send us a message</h2>
+      <p id="form-error" hidden class="mt-2 text-sm font-semibold text-red-700">Sorry, your message didn't go through. Please try again or call us.</p>
+      <script is:inline>
+        if (new URLSearchParams(location.search).has('error')) document.getElementById('form-error').hidden = false;
+      </script>
       <div class="mt-4"><InquiryForm type="contact" /></div>
     </div>
   </section>

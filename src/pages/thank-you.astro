@@ -1,0 +1,13 @@
+---
+// Shown after a form is sent without JavaScript.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site.js';
+---
+<BaseLayout title="Thank you" description="Thanks for contacting Essex Consignment.">
+  <section class="mx-auto max-w-3xl px-4 py-24 text-center">
+    <h1 class="text-4xl font-bold">Thank you!</h1>
+    <p class="mt-4">We received your message and will be in touch soon. For anything urgent, call
+      <a href={site.phoneHref} class="text-burgundy-700 underline">{site.phone}</a>.</p>
+    <a href="/" class="mt-8 inline-block rounded-full bg-burgundy-700 px-6 py-3 font-semibold text-white">Back to home</a>
+  </section>
+</BaseLayout>

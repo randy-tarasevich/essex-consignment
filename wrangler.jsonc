@@ -1,12 +1,17 @@
-// Cloudflare deploy config: static assets only (Astro builds to ./dist).
+// Cloudflare Worker: serves the Astro build from ./dist and handles /api/* (form submissions).
 {
   "name": "essex-consignment",
+  "main": "worker/index.js",
   "compatibility_date": "2026-11-01",
   // Public staging URL (essex-consignment.<subdomain>.workers.dev) and per-branch preview URLs
   "workers_dev": true,
   "preview_urls": true,
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "404-page"
-  }
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    // Only API requests run the Worker; everything else is served straight from ./dist
+    "run_worker_first": ["/api/*"]
+  },
+  "observability": { "enabled": true }
 }

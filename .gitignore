@@ -17,3 +17,6 @@ npm-debug.log*
 
 # wrangler
 .wrangler/
+
+# local Worker secrets
+.dev.vars

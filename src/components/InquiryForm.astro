@@ -1,37 +1,88 @@
 ---
 // Shared form for Contact and Consign With Us.
-// Phase 1 placeholder: submits nowhere yet.
-// Plan: POST to a Cloudflare Worker that creates/updates a Shopify customer,
-// tagged "website-contact" or "consignor", with marketing consent,
-// Cloudflare Turnstile spam protection, and an email notification.
+// Posts to the Worker at /api/inquiry, which saves the person as a Shopify customer
+// tagged "website-contact" or "consignor" and emails a notification.
+// Works without JavaScript (redirects to /thank-you/); with JavaScript it shows the result inline.
 const { type = 'contact' } = Astro.props; // 'contact' | 'consignor'
 const isConsignor = type === 'consignor';
+const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY;
+const field = 'mt-1 w-full rounded border border-burgundy-100 bg-white px-3 py-2 font-normal';
 ---
-<form class="space-y-4 max-w-xl" method="post" action="#" data-form-type={type}>
-  <input type="hidden" name="tag" value={isConsignor ? 'consignor' : 'website-contact'} />
+<form class="inquiry-form space-y-4 max-w-xl" method="post" action="/api/inquiry" novalidate>
+  <input type="hidden" name="type" value={type} />
+
+  <!-- Honeypot: hidden from people, filled in by bots -->
+  <div class="absolute -left-[9999px]" aria-hidden="true">
+    <label>Company website <input type="text" name="company_website" tabindex="-1" autocomplete="off" /></label>
+  </div>
+
   <div class="grid gap-4 sm:grid-cols-2">
     <label class="block text-sm font-semibold">First name
-      <input name="firstName" required autocomplete="given-name" class="mt-1 w-full rounded border border-burgundy-100 bg-white px-3 py-2 font-normal" />
+      <input name="firstName" required maxlength="80" autocomplete="given-name" class={field} />
     </label>
     <label class="block text-sm font-semibold">Last name
-      <input name="lastName" required autocomplete="family-name" class="mt-1 w-full rounded border border-burgundy-100 bg-white px-3 py-2 font-normal" />
+      <input name="lastName" required maxlength="80" autocomplete="family-name" class={field} />
     </label>
   </div>
   <label class="block text-sm font-semibold">Email
-    <input type="email" name="email" required autocomplete="email" class="mt-1 w-full rounded border border-burgundy-100 bg-white px-3 py-2 font-normal" />
+    <input type="email" name="email" required maxlength="254" autocomplete="email" class={field} />
   </label>
-  <label class="block text-sm font-semibold">Phone
-    <input type="tel" name="phone" autocomplete="tel" class="mt-1 w-full rounded border border-burgundy-100 bg-white px-3 py-2 font-normal" />
+  <label class="block text-sm font-semibold">Phone <span class="font-normal text-burgundy-600">(optional)</span>
+    <input type="tel" name="phone" maxlength="40" autocomplete="tel" class={field} />
   </label>
   <label class="block text-sm font-semibold">{isConsignor ? 'What would you like to consign?' : 'Message'}
-    <textarea name="message" rows="5" required class="mt-1 w-full rounded border border-burgundy-100 bg-white px-3 py-2 font-normal"></textarea>
+    <textarea name="message" rows="5" required maxlength="4000" class={field}></textarea>
   </label>
   <label class="flex items-start gap-2 text-sm">
     <input type="checkbox" name="acceptsMarketing" class="mt-1" />
     <span>Email me about new arrivals and shop news.</span>
   </label>
-  <!-- TODO: Cloudflare Turnstile widget -->
-  <button type="submit" class="rounded-full bg-burgundy-700 px-6 py-3 font-semibold text-white hover:bg-burgundy-800">
+
+  {siteKey && <div class="cf-turnstile" data-sitekey={siteKey} data-theme="light"></div>}
+
+  <button type="submit" class="rounded-full bg-burgundy-700 px-6 py-3 font-semibold text-white hover:bg-burgundy-800 disabled:opacity-60">
     {isConsignor ? 'Send consignment inquiry' : 'Send message'}
   </button>
+  <p class="form-status text-sm" role="status" aria-live="polite"></p>
 </form>
+
+{siteKey && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
+
+<script>
+  for (const form of document.querySelectorAll('form.inquiry-form')) {
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const status = form.querySelector('.form-status');
+      const button = form.querySelector('button[type="submit"]');
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      button.disabled = true;
+      status.className = 'form-status text-sm';
+      status.textContent = 'Sending…';
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+        const out = await res.json().catch(() => ({}));
+        if (res.ok && out.ok) {
+          form.reset();
+          status.className = 'form-status text-sm font-semibold text-green-800';
+          status.textContent = out.message || 'Thanks! We will be in touch soon.';
+        } else {
+          status.className = 'form-status text-sm font-semibold text-red-700';
+          status.textContent = out.message || 'Something went wrong. Please call us at (860) 767-9741.';
+        }
+      } catch {
+        status.className = 'form-status text-sm font-semibold text-red-700';
+        status.textContent = 'Could not send. Please check your connection or call us at (860) 767-9741.';
+      } finally {
+        button.disabled = false;
+        window.turnstile?.reset?.();
+      }
+    });
+  }
+</script>
