@@ -15,7 +15,13 @@ export const site = {
     postalCode: '06426',
     country: 'US',
   },
-  hours: 'By appointment', // TODO: confirm regular hours
+  hours: 'By appointment', // TODO: confirm regular hours (directories list Fri–Sat 11am–4pm)
+  // Structured hours for Google (schema.org). Fill once Al confirms, e.g.
+  // { days: ['Friday', 'Saturday'], opens: '11:00', closes: '16:00' }
+  openingHours: [],
+  // Official profiles for Google (schema.org sameAs): Facebook, eBay store, Google Business Profile, Yelp
+  sameAs: [], // TODO: get Facebook + eBay store URLs from Al
+  logo: '', // TODO: e.g. '/logo.png' once Al sends the logo file
   shopUrl: '', // TODO: Shopify storefront URL
 };
 

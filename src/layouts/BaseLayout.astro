@@ -23,6 +23,16 @@ const localBusiness = {
     postalCode: site.address.postalCode,
     addressCountry: site.address.country,
   },
+  ...(site.logo && { logo: new URL(site.logo, site.url).href, image: new URL(site.logo, site.url).href }),
+  ...(site.sameAs.length && { sameAs: site.sameAs }),
+  ...(site.openingHours.length && {
+    openingHoursSpecification: site.openingHours.map((h) => ({
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: h.days,
+      opens: h.opens,
+      closes: h.closes,
+    })),
+  }),
 };
 ---
 <!doctype html>
@@ -37,6 +47,8 @@ const localBusiness = {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    {site.logo && <meta property="og:image" content={new URL(site.logo, site.url).href} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <script type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
