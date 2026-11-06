@@ -1,0 +1,13 @@
+# Old essexconsignment.com URLs -> new Astro pages (301 = permanent, keeps search ranking)
+# Map + reasoning: REDIRECTS.md
+
+/home                       /         301
+/home/                      /         301
+/ebay-items-wanted          /consign  301
+/ebay-items-wanted/         /consign  301
+/sales-and-results          /consign  301
+/sales-and-results/         /consign  301
+/worldwide-consignments     /consign  301
+/worldwide-consignments/    /consign  301
+/contact-and-directions     /contact  301
+/contact-and-directions/    /contact  301
