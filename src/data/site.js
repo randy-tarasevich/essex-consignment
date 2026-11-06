@@ -27,7 +27,9 @@ export const site = {
     reviewCount: 7,
     reviewsUrl: '', // TODO: "View all Google reviews" link from the Business Profile
   },
-  logo: '', // TODO: e.g. '/logo.png' once Al sends the logo file
+  // Stand-in from the JPG Miles texted (Nov 6). Replace src/assets/logo.png + public/logo.png with the designer's file.
+  logo: '/logo.png',
+  ogImage: '/og-image.png',
   shopUrl: '', // TODO: Shopify storefront URL
 };
 
