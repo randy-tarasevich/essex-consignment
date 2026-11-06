@@ -11,6 +11,9 @@
      header switches from the menu button to the full desktop nav. */
   --breakpoint-nav: 72rem;
 
+  /* Button corner radius (8px, same as Henry Champion). Change here to adjust every button. */
+  --radius-btn: 0.5rem;
+
   --color-burgundy-50: #fbf3f4;
   --color-burgundy-100: #f4e1e4;
   --color-burgundy-600: #8a1a2c;

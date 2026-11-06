@@ -7,7 +7,7 @@ const Tag = reviewsUrl ? 'a' : 'div';
 ---
 <Tag
   {...(reviewsUrl && { href: reviewsUrl, target: '_blank', rel: 'noopener' })}
-  class="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-white hover:bg-white/20"
+  class="inline-flex items-center gap-2 rounded-btn bg-white/10 px-4 py-2 text-sm text-white hover:bg-white/20"
 >
   <span class="text-gold tracking-tight" aria-hidden="true">★★★★★</span>
   <span><strong>{rating}</strong> on Google · {reviewCount} reviews</span>
