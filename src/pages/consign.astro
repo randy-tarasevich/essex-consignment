@@ -2,14 +2,52 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHeader from '../components/PageHeader.astro';
 import InquiryForm from '../components/InquiryForm.astro';
+import { categories, situations, results, usd } from '../data/consign.js';
+import { site } from '../data/site.js';
+const highlights = results.filter((r) => r.featured);
 ---
-<BaseLayout title="Consign With Us" description="Consign furniture, antiques, art, jewelry, and collectibles with Essex Consignment. We sell for the highest price.">
-  <PageHeader title="Consign With Us" intro="We sell your items for the highest price and give you the best return in the business." />
+<BaseLayout title="Consign With Us" description="Consign furniture, antiques, art, jewelry, collectibles, and more with Essex Consignment. From an ashtray to a Picasso, we sell for the highest price.">
+  <PageHeader title="Consign With Us" intro="From an ashtray to a Picasso, one of the best places on earth to sell anything you have. We sell for the highest price and give you back the best returns in the business." />
+
+  <!-- What we accept -->
+  <section class="mx-auto max-w-6xl px-4 py-12" aria-labelledby="accept-heading">
+    <h2 id="accept-heading" class="text-3xl font-bold">What we accept</h2>
+    <p class="mt-2 max-w-2xl">If you’re not sure, ask. Whatever it is, we can sell it for more.</p>
+    <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {categories.map((c) => (
+        <li class="rounded-lg bg-white p-5 shadow-sm ring-1 ring-burgundy-100">
+          <h3 class="text-lg">{c.name}</h3>
+          <p class="mt-1 text-sm">{c.items}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- Sales results highlights -->
+  <section class="bg-white border-y border-burgundy-100" aria-labelledby="results-heading">
+    <div class="mx-auto max-w-6xl px-4 py-12">
+      <h2 id="results-heading" class="text-3xl font-bold">We get more than auction estimates</h2>
+      <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {highlights.map((r) => (
+          <li class="rounded-lg bg-cream p-5 ring-1 ring-burgundy-100">
+            <h3 class="text-lg">{r.item}</h3>
+            <p class="mt-2 text-sm">Auction estimate {usd(r.estimate)}</p>
+            <p class="font-sans text-2xl font-bold text-burgundy-700">Sold for {usd(r.sold)}</p>
+          </li>
+        ))}
+      </ul>
+      <a href="/results/" class="mt-6 inline-block font-semibold text-burgundy-700 hover:underline">See all sales results →</a>
+    </div>
+  </section>
+
   <section class="mx-auto max-w-6xl px-4 py-12 grid gap-12 lg:grid-cols-2">
     <div class="space-y-8">
       <div>
-        <h2 class="text-2xl font-bold">What we accept</h2>
-        <p class="mt-2"><!-- TODO: from kickoff sheet --> Furniture, antiques, art, jewelry, collectibles and more. Full list coming from the kickoff sheet.</p>
+        <h2 class="text-2xl font-bold">Is this you?</h2>
+        <ul class="mt-4 grid grid-cols-2 gap-x-6 gap-y-2">
+          {situations.map((s) => <li class="flex gap-2"><span aria-hidden="true" class="text-gold">◆</span>{s}</li>)}
+        </ul>
+        <p class="mt-4">We want anything you have, from ash trays to rare art. Call <a href={site.phoneHref} class="font-semibold text-burgundy-700 underline">{site.phone}</a> or fill out the form.</p>
       </div>
       <div>
         <h2 class="text-2xl font-bold">How drop-off works</h2>

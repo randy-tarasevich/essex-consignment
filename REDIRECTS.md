@@ -8,7 +8,7 @@ Redirects live in `public/_redirects` (Cloudflare Workers static assets reads it
 | `/` | Home: "Whatever it is, we can sell it for more!" | `/` | same URL |
 | `/home` | Duplicate of the homepage | `/` | 301 |
 | `/ebay-items-wanted` | eBay items wanted, "Top Rated Seller (24 Yrs)" | `/consign` | 301 |
-| `/sales-and-results` | "Sell your stuff", 16,000 site views/month | `/consign` | 301 |
+| `/sales-and-results` | "Sell your stuff", 16,000 site views/month | `/results` | 301 |
 | `/worldwide-consignments` | "From an ashtray to a Picasso", 5-star eBay seller | `/consign` | 301 |
 | `/contact-and-directions` | Phone, address, Google Maps directions | `/contact` | 301 |
 
@@ -16,8 +16,8 @@ New pages with no old equivalent: `/about`, `/announcements`, `/thank-you`.
 
 ## Open decisions
 
-- **eBay Items Wanted, Sales Results, Worldwide Consignments.** If any of these keeps its own page
-  on the new site, point its redirect at that page instead of `/consign`.
+- **Decided Nov 6:** Sales Results has its own page (`/results`). eBay Items Wanted and Worldwide
+  Consignments are merged into `/consign` ("What we accept", "Is this you?"). Content source: Al's print ads.
 - **Broken link on the old Contact page.** It links to `/essexconsignments/`, which returns 404.
   It was probably meant to be their Facebook page; confirm the right URL with Al.
 

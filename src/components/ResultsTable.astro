@@ -1,0 +1,46 @@
+---
+// Auction estimate vs. sold price. Table on desktop, cards on phones.
+import { usd, pctOver } from '../data/consign.js';
+const { items, caption = 'Actual items sold: auction estimate compared with the price Essex Consignment got' } = Astro.props;
+---
+<div>
+  <!-- Phones: cards -->
+  <ul class="grid gap-4 sm:grid-cols-2 md:hidden">
+    {items.map((r) => (
+      <li class="rounded-lg bg-white p-4 shadow-sm ring-1 ring-burgundy-100">
+        <p class="text-xs font-sans font-semibold uppercase tracking-wide text-burgundy-600">{r.category}</p>
+        <h3 class="mt-1 text-lg">{r.item}</h3>
+        <dl class="mt-3 grid grid-cols-2 gap-2 text-sm">
+          <div><dt class="text-ink/70">Auction estimate</dt><dd class="font-sans">{usd(r.estimate)}</dd></div>
+          <div><dt class="text-ink/70">Sold by Essex</dt><dd class="font-sans text-lg font-bold text-burgundy-700">{usd(r.sold)}</dd></div>
+        </dl>
+        <p class="mt-2 text-sm font-semibold text-navy-600">{pctOver(r)}% over estimate</p>
+      </li>
+    ))}
+  </ul>
+
+  <!-- Tablet and up: table -->
+  <table class="hidden w-full text-left md:table">
+    <caption class="sr-only">{caption}</caption>
+    <thead>
+      <tr class="border-b-2 border-burgundy-700 font-sans text-sm uppercase tracking-wide">
+        <th scope="col" class="py-3 pr-4">Category</th>
+        <th scope="col" class="py-3 pr-4">Item</th>
+        <th scope="col" class="py-3 pr-4 text-right">Auction estimate</th>
+        <th scope="col" class="py-3 pr-4 text-right">Sold by Essex</th>
+        <th scope="col" class="py-3 text-right">Over estimate</th>
+      </tr>
+    </thead>
+    <tbody>
+      {items.map((r) => (
+        <tr class="border-b border-burgundy-100">
+          <td class="py-3 pr-4 font-semibold text-burgundy-800">{r.category}</td>
+          <th scope="row" class="py-3 pr-4 font-normal">{r.item}</th>
+          <td class="py-3 pr-4 text-right font-sans tabular-nums">{usd(r.estimate)}</td>
+          <td class="py-3 pr-4 text-right font-sans font-bold tabular-nums text-burgundy-700">{usd(r.sold)}</td>
+          <td class="py-3 text-right font-sans tabular-nums text-navy-600">+{pctOver(r)}%</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>

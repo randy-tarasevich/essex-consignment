@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import ResultsTable from '../components/ResultsTable.astro';
+import { results } from '../data/consign.js';
+import { site } from '../data/site.js';
+---
+<BaseLayout title="Sales Results" description="Real items Essex Consignment has sold, from a Norman Rockwell painting to a 1984 Ferrari, compared with their auction estimates.">
+  <PageHeader title="Sales Results" intro="Sell your “stuff” and put more in your pocket. Here are real items we’ve sold, next to what an auction house estimated they’d bring." />
+  <section class="mx-auto max-w-6xl px-4 py-12">
+    <ResultsTable items={results} />
+    <p class="mt-6 text-sm text-ink/70">Past results don’t guarantee a future price. Every item is different, and we’ll give you an honest read on yours.</p>
+  </section>
+  <section class="bg-burgundy-800 text-white">
+    <div class="mx-auto max-w-6xl px-4 py-14 text-center">
+      <h2 class="text-3xl font-bold text-white">{site.tagline}</h2>
+      <div class="mt-6 flex flex-wrap justify-center gap-4">
+        <a href="/consign/" class="rounded-btn bg-white px-6 py-3 font-semibold text-burgundy-800 hover:bg-cream">Consign with us</a>
+        <a href={site.phoneHref} class="rounded-btn border border-white px-6 py-3 font-semibold hover:bg-burgundy-700">Call {site.phone}</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

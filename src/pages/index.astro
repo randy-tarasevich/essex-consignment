@@ -3,12 +3,14 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import FeaturedGallery from '../components/FeaturedGallery.astro';
 import GoogleRating from '../components/GoogleRating.astro';
 import { site } from '../data/site.js';
+import { stats, results, usd } from '../data/consign.js';
+const highlights = results.filter((r) => r.featured).slice(0, 3);
 ---
 <BaseLayout>
   <section class="bg-burgundy-800 text-white">
     <div class="mx-auto max-w-6xl px-4 py-20 text-center">
       <p class="text-sm uppercase tracking-widest text-gold">Estate furniture &amp; objets d'art · Essex, CT</p>
-      <h1 class="mt-4 text-4xl sm:text-6xl font-bold text-white">From ash trays to rare art</h1>
+      <h1 class="mt-4 text-4xl sm:text-6xl font-bold text-white">From an ashtray to a Picasso</h1>
       <p class="mx-auto mt-6 max-w-2xl text-lg text-burgundy-100">{site.tagline} 24 years as a top-rated eBay seller, with buyers worldwide.</p>
       <div class="mt-8 flex flex-wrap justify-center gap-4">
         <a href={site.shopUrl || '#featured-heading'} class="rounded-btn bg-white px-6 py-3 font-semibold text-burgundy-800 hover:bg-cream">Shop now</a>
@@ -17,6 +19,36 @@ import { site } from '../data/site.js';
       <div class="mt-6"><GoogleRating /></div>
     </div>
   </section>
+  <!-- Trust stats -->
+  <section class="bg-white border-y border-burgundy-100" aria-label="Essex Consignment by the numbers">
+    <ul class="mx-auto max-w-6xl px-4 py-8 grid gap-6 text-center sm:grid-cols-3">
+      {stats.map((s) => (
+        <li>
+          <p class="font-display text-2xl font-bold text-burgundy-800">{s.value}</p>
+          <p class="text-sm uppercase tracking-wide">{s.label}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
   <FeaturedGallery />
-  <!-- TODO: what we accept / sales results highlights (confirm with Al which current-site content to keep) -->
+  <!-- Sales results highlights -->
+  <section class="bg-white border-y border-burgundy-100" aria-labelledby="sold-heading">
+    <div class="mx-auto max-w-6xl px-4 py-16">
+      <h2 id="sold-heading" class="text-3xl font-bold">Sell your “stuff” and put more in your pocket</h2>
+      <p class="mt-2 max-w-2xl">Real items we’ve sold, compared with their auction estimates.</p>
+      <ul class="mt-8 grid gap-4 sm:grid-cols-3">
+        {highlights.map((r) => (
+          <li class="rounded-lg bg-cream p-5 ring-1 ring-burgundy-100">
+            <h3 class="text-lg">{r.item}</h3>
+            <p class="mt-2 text-sm">Auction estimate {usd(r.estimate)}</p>
+            <p class="font-sans text-2xl font-bold text-burgundy-700">Sold for {usd(r.sold)}</p>
+          </li>
+        ))}
+      </ul>
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="/results/" class="rounded-btn bg-burgundy-700 px-6 py-3 font-semibold text-white hover:bg-burgundy-800">See all sales results</a>
+        <a href="/consign/" class="rounded-btn border border-burgundy-700 px-6 py-3 font-semibold text-burgundy-700 hover:bg-burgundy-50">What we accept</a>
+      </div>
+    </div>
+  </section>
 </BaseLayout>

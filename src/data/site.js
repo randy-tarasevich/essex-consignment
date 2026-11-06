@@ -38,5 +38,6 @@ export const nav = [
   { label: 'About', href: '/about/' },
   { label: 'Announcements', href: '/announcements/' },
   { label: 'Consign With Us', href: '/consign/' },
+  { label: 'Sales Results', href: '/results/' },
   { label: 'Contact', href: '/contact/' },
 ];

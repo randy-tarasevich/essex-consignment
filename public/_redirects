@@ -5,8 +5,8 @@
 /home/                      /         301
 /ebay-items-wanted          /consign  301
 /ebay-items-wanted/         /consign  301
-/sales-and-results          /consign  301
-/sales-and-results/         /consign  301
+/sales-and-results          /results  301
+/sales-and-results/         /results  301
 /worldwide-consignments     /consign  301
 /worldwide-consignments/    /consign  301
 /contact-and-directions     /contact  301
