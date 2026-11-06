@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import FeaturedGallery from '../components/FeaturedGallery.astro';
+import GoogleRating from '../components/GoogleRating.astro';
 import { site } from '../data/site.js';
 ---
 <BaseLayout>
@@ -13,6 +14,7 @@ import { site } from '../data/site.js';
         <a href={site.shopUrl || '#featured-heading'} class="rounded-full bg-white px-6 py-3 font-semibold text-burgundy-800 hover:bg-cream">Shop now</a>
         <a href="/consign/" class="rounded-full border border-white px-6 py-3 font-semibold hover:bg-burgundy-700">Consign with us</a>
       </div>
+      <div class="mt-6"><GoogleRating /></div>
     </div>
   </section>
   <FeaturedGallery />

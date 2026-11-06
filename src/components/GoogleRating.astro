@@ -1,0 +1,14 @@
+---
+// Small trust badge: Google rating + link to the reviews.
+// Not marked up as schema: Google ignores self-published ratings for local businesses.
+import { site } from '../data/site.js';
+const { rating, reviewCount, reviewsUrl } = site.google;
+const Tag = reviewsUrl ? 'a' : 'div';
+---
+<Tag
+  {...(reviewsUrl && { href: reviewsUrl, target: '_blank', rel: 'noopener' })}
+  class="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-sm text-white hover:bg-white/20"
+>
+  <span class="text-gold tracking-tight" aria-hidden="true">★★★★★</span>
+  <span><strong>{rating}</strong> on Google · {reviewCount} reviews</span>
+</Tag>

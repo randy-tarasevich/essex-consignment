@@ -21,6 +21,12 @@ export const site = {
   openingHours: [],
   // Official profiles for Google (schema.org sameAs): Facebook, eBay store, Google Business Profile, Yelp
   sameAs: [], // TODO: get Facebook + eBay store URLs from Al
+  // Google rating shown on the homepage. Update by hand when it changes (checked Nov 6, 2026).
+  google: {
+    rating: '5.0',
+    reviewCount: 7,
+    reviewsUrl: '', // TODO: "View all Google reviews" link from the Business Profile
+  },
   logo: '', // TODO: e.g. '/logo.png' once Al sends the logo file
   shopUrl: '', // TODO: Shopify storefront URL
 };
