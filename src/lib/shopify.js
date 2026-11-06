@@ -45,9 +45,10 @@ const FEATURED_QUERY = `
   }
 `;
 
-const FALLBACK_QUERY = `
-  query Products($first: Int!) {
-    products(first: $first) { nodes { ${PRODUCT_FIELDS} } }
+// Newest products in the store, used to top up the gallery when Featured has fewer than 10.
+const NEWEST_QUERY = `
+  query Newest($first: Int!) {
+    products(first: $first, sortKey: CREATED_AT, reverse: true) { nodes { ${PRODUCT_FIELDS} } }
   }
 `;
 
@@ -80,25 +81,26 @@ export function toCard(p, domain) {
 }
 
 /**
- * Items in the "Featured" collection that are still for sale, max 10.
- * Returns { items, source } and never throws, so a Shopify outage can't break the build.
+ * Up to 10 for-sale items: the "Featured" collection first, then the store's newest
+ * products to fill any empty spots. Returns { items, source } and never throws,
+ * so a Shopify outage can't break the build.
  */
 export async function getFeaturedItems({ handle = 'featured' } = {}) {
   const src = source();
   if (!src) return { items: [], source: 'none' };
   try {
-    // Ask for extra so sold items can drop off and still leave up to 10.
+    // Ask for extra so sold items can drop off and still leave 10.
     const data = await storefront(src, FEATURED_QUERY, { handle, first: 30 });
-    let nodes = data.collection?.products.nodes;
-    if (!nodes && src.kind === 'mock') {
-      // Demo store may not have a "featured" collection; show any products for layout work.
-      nodes = (await storefront(src, FALLBACK_QUERY, { first: 30 })).products.nodes;
+    const featured = data.collection?.products.nodes ?? [];
+    if (!data.collection) console.warn(`[shopify] Collection "${handle}" not found on ${src.domain}; using newest products`);
+
+    let nodes = featured.filter((p) => p.availableForSale);
+    if (nodes.length < MAX_ITEMS) {
+      const newest = (await storefront(src, NEWEST_QUERY, { first: 30 })).products.nodes;
+      const seen = new Set(nodes.map((p) => p.id));
+      nodes = nodes.concat(newest.filter((p) => p.availableForSale && !seen.has(p.id)));
     }
-    if (!nodes) {
-      console.warn(`[shopify] Collection "${handle}" not found on ${src.domain}`);
-      return { items: [], source: src.kind };
-    }
-    const items = nodes.filter((p) => p.availableForSale).slice(0, MAX_ITEMS).map((p) => toCard(p, src.domain));
+    const items = nodes.slice(0, MAX_ITEMS).map((p) => toCard(p, src.domain));
     return { items, source: src.kind };
   } catch (err) {
     console.warn(`[shopify] Could not load featured items: ${err.message}`);

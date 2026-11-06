@@ -1,10 +1,10 @@
 ---
-// Homepage gallery: up to 10 for-sale items from the Shopify "Featured" collection.
+// Homepage gallery: 10 for-sale items, Shopify "Featured" collection first, topped up with the newest products.
 // Each card links to its Shopify product page. Sold items drop off on the next build.
 import { getFeaturedItems } from '../lib/shopify.js';
 
 const { items, source } = await getFeaturedItems();
-const placeholders = Array.from({ length: 6 }, (_, i) => ({ id: `p${i}`, title: `Featured item ${i + 1}`, price: '$—', url: '#', image: null }));
+const placeholders = Array.from({ length: 10 }, (_, i) => ({ id: `p${i}`, title: `Featured item ${i + 1}`, price: '$—', url: '#', image: null }));
 const cards = items.length ? items : placeholders;
 const note =
   source === 'mock' ? 'Preview: demo products from mock.shop'
@@ -16,7 +16,7 @@ const note =
     <h2 id="featured-heading" class="text-3xl font-bold">Featured Items</h2>
     {note && <p class="text-xs text-burgundy-600">{note}</p>}
   </div>
-  <ul class="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+  <ul class="mt-8 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-5">
     {cards.map((item, i) => (
       <li class="group rounded-lg bg-white shadow-sm ring-1 ring-burgundy-100 overflow-hidden">
         <a href={item.url} class="block h-full" target={item.url.startsWith('http') ? '_blank' : undefined} rel={item.url.startsWith('http') ? 'noopener' : undefined}>
@@ -27,7 +27,7 @@ const note =
                 alt={item.image.alt}
                 width={item.image.width}
                 height={item.image.height}
-                loading={i < 3 ? 'eager' : 'lazy'}
+                loading={i < 5 ? 'eager' : 'lazy'}
                 decoding="async"
                 class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
