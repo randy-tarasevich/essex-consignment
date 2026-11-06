@@ -1,4 +1,7 @@
 @import "tailwindcss";
+/* Self-hosted brand fonts (Fontsource, no Google Fonts CDN). Stand-ins until the logo designer confirms the real fonts. */
+@import "@fontsource-variable/cinzel";
+@import "@fontsource-variable/eb-garamond";
 
 /* Essex Consignment brand tokens: burgundy + cream, taken from the current logo.
    Swap for exact values once the logo files arrive. */
@@ -13,12 +16,21 @@
   --color-ink: #1f1a1b;
   --color-gold: #c9a14a;
 
-  /* System stack for now; replace with self-hosted brand fonts (no Google Fonts CDN). */
+  /* Navy from the logo's border: secondary accent. */
+  --color-navy-600: #2a3d63;
+  --color-navy-800: #172645;
+  --color-navy-900: #0e1830;
+
+  /* Display = inscription caps like "CONSIGNMENT" in the logo (headings, nav).
+     Serif = old-style book face like the logo's tagline (body text).
+     Swap the family names here if the designer's fonts differ. */
+  --font-display: "Cinzel Variable", "Trajan Pro", Georgia, serif;
+  --font-serif: "EB Garamond Variable", Garamond, Georgia, "Times New Roman", serif;
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-serif: ui-serif, Georgia, "Times New Roman", serif;
 }
 
 @layer base {
-  html { color: var(--color-ink); background: var(--color-cream); }
-  h1, h2, h3 { font-family: var(--font-serif); color: var(--color-burgundy-800); }
+  html { color: var(--color-ink); background: var(--color-cream); font-family: var(--font-serif); font-size: 1.0625rem; }
+  h1, h2 { font-family: var(--font-display); color: var(--color-burgundy-800); letter-spacing: 0.02em; }
+  h3 { font-family: var(--font-serif); color: var(--color-burgundy-800); font-weight: 600; }
 }
