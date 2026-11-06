@@ -6,6 +6,11 @@
 /* Essex Consignment brand tokens: burgundy + cream, taken from the current logo.
    Swap for exact values once the logo files arrive. */
 @theme {
+  /* Breakpoints match the Henry Champion House project: Tailwind defaults
+     (sm 640, md 768, lg 1024, xl 1280) plus "nav" at 1152px, where the
+     header switches from the menu button to the full desktop nav. */
+  --breakpoint-nav: 72rem;
+
   --color-burgundy-50: #fbf3f4;
   --color-burgundy-100: #f4e1e4;
   --color-burgundy-600: #8a1a2c;

@@ -5,13 +5,13 @@ import logo from '../assets/logo.png';
 const current = Astro.url.pathname;
 ---
 <header class="bg-white border-b border-burgundy-100">
-  <div class="mx-auto max-w-6xl px-4 py-2 md:py-4 flex items-center justify-between gap-4">
+  <div class="mx-auto max-w-6xl px-4 py-2 nav:py-4 flex items-center justify-between gap-4">
     <a href="/" class="shrink-0" aria-label={`${site.name} home`}>
-      <Image src={logo} alt={site.name} height={72} densities={[1, 2]} loading="eager" fetchpriority="high" class="h-14 md:h-[72px] w-auto" />
+      <Image src={logo} alt={site.name} height={72} densities={[1, 2]} loading="eager" fetchpriority="high" class="h-14 nav:h-[72px] w-auto" />
     </a>
 
     <!-- Desktop nav -->
-    <nav aria-label="Main" class="hidden md:block">
+    <nav aria-label="Main" class="hidden nav:block">
       <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
         {nav.map((item) => (
           <li>
@@ -24,12 +24,12 @@ const current = Astro.url.pathname;
         ))}
       </ul>
     </nav>
-    <a href={site.phoneHref} class="hidden md:inline-block rounded-full bg-burgundy-700 px-4 py-2 text-sm font-semibold text-white hover:bg-burgundy-800">
+    <a href={site.phoneHref} class="hidden nav:inline-block rounded-full bg-burgundy-700 px-4 py-2 text-sm font-semibold text-white hover:bg-burgundy-800">
       {site.phone}
     </a>
 
     <!-- Mobile: call + menu buttons -->
-    <div class="flex items-center gap-2 md:hidden">
+    <div class="flex items-center gap-2 nav:hidden">
       <a href={site.phoneHref} class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-burgundy-700 text-white" aria-label={`Call ${site.phone}`}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>
       </a>
@@ -42,7 +42,7 @@ const current = Astro.url.pathname;
   </div>
 
   <!-- Mobile menu panel -->
-  <nav id="mobile-menu" aria-label="Main" class="hidden border-t border-burgundy-100 md:hidden">
+  <nav id="mobile-menu" aria-label="Main" class="hidden border-t border-burgundy-100 nav:hidden">
     <ul class="mx-auto max-w-6xl px-4 py-2 text-lg font-semibold">
       {nav.map((item) => (
         <li class="border-b border-burgundy-50 last:border-0">
