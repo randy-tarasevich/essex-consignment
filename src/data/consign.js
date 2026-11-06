@@ -6,7 +6,7 @@
 export const stats = [
   { value: '24 years', label: '5-star rated eBay seller' },
   { value: '38,000', label: 'transactions worldwide' },
-  { value: 'Ashtray to Picasso', label: 'we sell it all' },
+  // Third stat is calculated from `results` below, so it stays accurate as sales change.
 ];
 
 // "What we accept": both ads' lists merged and grouped.
@@ -61,3 +61,7 @@ export const results = [
 
 export const usd = (n) => '$' + n.toLocaleString('en-US');
 export const pctOver = (r) => Math.round(((r.sold - r.estimate) / r.estimate) * 100);
+
+// Average % our sales beat their auction estimates (shown on the homepage).
+const avgOver = Math.round(results.reduce((sum, r) => sum + pctOver(r), 0) / results.length);
+stats.push({ value: `${avgOver}% more`, label: 'than auction estimates, on average' });
