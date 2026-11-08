@@ -18,7 +18,7 @@ const note =
   </div>
   <ul class="mt-8 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-5">
     {cards.map((item, i) => (
-      <li class="group rounded-lg bg-white shadow-sm ring-1 ring-burgundy-100 overflow-hidden">
+      <li class="group bg-white ring-1 ring-burgundy-100 overflow-hidden">
         <a href={item.url} class="block h-full" target={item.url.startsWith('http') ? '_blank' : undefined} rel={item.url.startsWith('http') ? 'noopener' : undefined}>
           <div class="aspect-square bg-burgundy-50 overflow-hidden">
             {item.image && (
@@ -34,9 +34,9 @@ const note =
             )}
           </div>
           <div class="p-4">
-            <h3 class="font-sans text-base font-semibold text-ink">{item.title}</h3>
-            <p class="mt-1 text-sm">{item.price}</p>
-            <span class="mt-3 inline-block text-sm font-semibold text-burgundy-700 group-hover:underline">Shop now →</span>
+            <h3 class="text-lg font-medium leading-snug text-ink">{item.title}</h3>
+            <p class="mt-1 text-base lining-nums tabular-nums text-burgundy-700">{item.price}</p>
+            <span class="mt-3 inline-block text-xs font-semibold uppercase tracking-[0.2em] text-burgundy-700 group-hover:underline">Shop now →</span>
           </div>
         </a>
       </li>

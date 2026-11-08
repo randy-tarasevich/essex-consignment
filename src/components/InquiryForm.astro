@@ -13,7 +13,7 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || (import.meta.env.DE
 // Web3Forms "Essex Consignment" form (public key). Sends to info@shorelinewebsolutionsct.com during
 // development; switch to a key that sends to al@essexconsignment.com at launch.
 const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || '154ab7cf-7f4c-4172-b72c-3974e1ad6648';
-const field = 'mt-1 w-full rounded border border-burgundy-100 bg-white px-3 py-2 font-normal';
+const field = 'mt-1 w-full border border-burgundy-100 bg-white px-3 py-2 font-normal';
 ---
 <form class="inquiry-form space-y-4 max-w-xl" method="post" action="/api/inquiry" data-notify-key={web3formsKey} novalidate>
   <input type="hidden" name="type" value={type} />

@@ -1,6 +1,7 @@
 @import "tailwindcss";
-/* Self-hosted brand fonts (Fontsource, no Google Fonts CDN). Stand-ins until the logo designer confirms the real fonts. */
-@import "@fontsource-variable/cinzel";
+/* Self-hosted brand fonts (Fontsource, no Google Fonts CDN). Stand-ins until the client's licensed fonts arrive.
+   Bodoni Moda = high-contrast Didone display face for the "elegant, sharp" direction Miles asked for. */
+@import "@fontsource-variable/bodoni-moda";
 @import "@fontsource-variable/eb-garamond";
 
 /* Essex Consignment brand tokens: burgundy + cream, taken from the current logo.
@@ -11,8 +12,10 @@
      header switches from the menu button to the full desktop nav. */
   --breakpoint-nav: 72rem;
 
-  /* Button corner radius (8px, same as Henry Champion). Change here to adjust every button. */
-  --radius-btn: 0.5rem;
+  /* Square corners everywhere (client direction: sharp edges, no rounded "app" look).
+     Clearing the radius scale makes every rounded-* utility a no-op. */
+  --radius-*: initial;
+  --radius-btn: 0;
 
   --color-burgundy-50: #fbf3f4;
   --color-burgundy-100: #f4e1e4;
@@ -29,16 +32,40 @@
   --color-navy-800: #172645;
   --color-navy-900: #0e1830;
 
-  /* Display = inscription caps like "CONSIGNMENT" in the logo (headings, nav).
+  /* Display = high-contrast Didone serif (headings).
      Serif = old-style book face like the logo's tagline (body text).
      Swap the family names here if the designer's fonts differ. */
-  --font-display: "Cinzel Variable", "Trajan Pro", Georgia, serif;
+  --font-display: "Bodoni Moda Variable", "Bodoni 72", Didot, Georgia, serif;
   --font-serif: "EB Garamond Variable", Garamond, Georgia, "Times New Roman", serif;
   --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 @layer base {
   html { color: var(--color-ink); background: var(--color-cream); font-family: var(--font-serif); font-size: 1.0625rem; }
-  h1, h2 { font-family: var(--font-display); color: var(--color-burgundy-800); letter-spacing: 0.02em; }
+  h1, h2 { font-family: var(--font-display); color: var(--color-burgundy-800); font-weight: 400; letter-spacing: 0.01em; }
   h3 { font-family: var(--font-serif); color: var(--color-burgundy-800); font-weight: 600; }
+
+  /* Toile watermark behind every page (Essex steam train + riverboat, burgundy on cream).
+     A fixed pseudo-element instead of background-attachment: fixed, which iOS Safari ignores.
+     Tile is 768px, shown at 512px so it stays sharp on Retina screens.
+     Tune strength with --toile-opacity. Full-width bands use translucent backgrounds so it shows through;
+     cards and forms stay solid for readability. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: url("/images/toile-essex.webp") 0 0 / 512px repeat;
+    opacity: var(--toile-opacity, 0.14);
+  }
+  @media print {
+    body::before { display: none; }
+  }
+}
+
+/* Boutique card frame: thin inset rule instead of a drop shadow. */
+@utility frame {
+  outline: 1px solid var(--color-burgundy-100);
+  outline-offset: -7px;
 }

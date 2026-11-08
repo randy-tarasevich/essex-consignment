@@ -20,7 +20,7 @@ const highlights = results.filter((r) => r.featured).slice(0, 3);
     </div>
   </section>
   <!-- Trust stats -->
-  <section class="bg-white border-y border-burgundy-100" aria-label="Essex Consignment by the numbers">
+  <section class="bg-white/60 border-y border-burgundy-100" aria-label="Essex Consignment by the numbers">
     <ul class="mx-auto max-w-6xl px-4 py-8 grid gap-6 text-center sm:grid-cols-3">
       {stats.map((s) => (
         <li>
@@ -32,16 +32,16 @@ const highlights = results.filter((r) => r.featured).slice(0, 3);
   </section>
   <FeaturedGallery />
   <!-- Sales results highlights -->
-  <section class="bg-white border-y border-burgundy-100" aria-labelledby="sold-heading">
+  <section class="bg-white/60 border-y border-burgundy-100" aria-labelledby="sold-heading">
     <div class="mx-auto max-w-6xl px-4 py-16">
       <h2 id="sold-heading" class="text-3xl font-bold">Sell your “stuff” and put more in your pocket</h2>
       <p class="mt-2 max-w-2xl">Real items we’ve sold, compared with their auction estimates.</p>
       <ul class="mt-8 grid gap-4 sm:grid-cols-3">
         {highlights.map((r) => (
-          <li class="rounded-lg bg-cream p-5 ring-1 ring-burgundy-100">
+          <li class="bg-cream p-5 ring-1 ring-burgundy-100 frame">
             <h3 class="text-lg">{r.item}</h3>
             <p class="mt-2 text-sm">Auction estimate {usd(r.estimate)}</p>
-            <p class="font-sans text-2xl font-bold text-burgundy-700">Sold for {usd(r.sold)}</p>
+            <p class="font-serif lining-nums text-2xl font-bold text-burgundy-700">Sold for {usd(r.sold)}</p>
           </li>
         ))}
       </ul>
