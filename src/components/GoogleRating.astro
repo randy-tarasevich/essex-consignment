@@ -4,10 +4,15 @@
 import { site } from '../data/site.js';
 const { rating, reviewCount, reviewsUrl } = site.google;
 const Tag = reviewsUrl ? 'a' : 'div';
+// tone="light" for cream backgrounds (hero cartouche); default is for dark burgundy bands.
+const { tone = 'dark' } = Astro.props;
+const styles = tone === 'light'
+  ? 'border-t border-burgundy-100 pt-4 text-burgundy-800 hover:text-burgundy-600'
+  : 'rounded-btn bg-white/10 px-4 py-2 text-white hover:bg-white/20';
 ---
 <Tag
   {...(reviewsUrl && { href: reviewsUrl, target: '_blank', rel: 'noopener' })}
-  class="inline-flex items-center gap-2 rounded-btn bg-white/10 px-4 py-2 text-sm text-white hover:bg-white/20"
+  class:list={['inline-flex items-center gap-2 text-sm', styles]}
 >
   <span class="text-gold tracking-tight" aria-hidden="true">★★★★★</span>
   <span><strong>{rating}</strong> on Google · {reviewCount} reviews</span>
