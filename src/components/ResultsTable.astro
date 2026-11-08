@@ -20,7 +20,8 @@ const { items, caption = 'Actual items sold: auction estimate compared with the 
   </ul>
 
   <!-- Tablet and up: table -->
-  <table class="hidden w-full text-left md:table">
+  <div class="hidden bg-cream px-8 py-6 ring-1 ring-burgundy-100 frame md:block">
+  <table class="w-full text-left">
     <caption class="sr-only">{caption}</caption>
     <thead>
       <tr class="border-b-2 border-burgundy-700 font-serif lining-nums text-sm uppercase tracking-wide">
@@ -43,4 +44,5 @@ const { items, caption = 'Actual items sold: auction estimate compared with the 
       ))}
     </tbody>
   </table>
+  </div>
 </div>
