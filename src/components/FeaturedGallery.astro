@@ -2,6 +2,11 @@
 // Homepage gallery: 10 for-sale items, Shopify "Featured" collection first, topped up with the newest products.
 // Each card links to its Shopify product page. Sold items drop off on the next build.
 import { getFeaturedItems } from '../lib/shopify.js';
+import { site } from '../data/site.js';
+
+// The homepage opens with this gallery, so it carries the page's H1 there.
+const { headingLevel = 'h2', eyebrow = '' } = Astro.props;
+const Heading = headingLevel;
 
 const { items, source } = await getFeaturedItems();
 const placeholders = Array.from({ length: 10 }, (_, i) => ({ id: `p${i}`, title: `Featured item ${i + 1}`, price: '$—', url: '#', image: null }));
@@ -11,10 +16,16 @@ const note =
   : items.length === 0 ? 'Preview: Shopify not connected yet'
   : '';
 ---
-<section class="mx-auto max-w-6xl px-4 py-16" aria-labelledby="featured-heading">
-  <div class="flex items-end justify-between gap-4">
-    <h2 id="featured-heading" class="text-3xl font-bold">Featured Items</h2>
-    {note && <p class="text-xs text-burgundy-600">{note}</p>}
+<section class="mx-auto max-w-6xl px-4 py-12 sm:py-16" aria-labelledby="featured-heading">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      {eyebrow && <p class="text-xs font-semibold uppercase tracking-[0.25em] text-burgundy-600">{eyebrow}</p>}
+      <Heading id="featured-heading" class:list={['text-3xl', headingLevel === 'h1' ? 'mt-3 sm:text-4xl' : 'font-bold']}>Featured Items</Heading>
+    </div>
+    <div class="flex flex-col items-end gap-2">
+      {site.shopUrl && <a href={site.shopUrl} class="text-xs font-semibold uppercase tracking-[0.2em] text-burgundy-700 hover:underline">Shop all items →</a>}
+      {note && <p class="text-xs text-burgundy-600">{note}</p>}
+    </div>
   </div>
   <ul class="mt-8 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-5">
     {cards.map((item, i) => (

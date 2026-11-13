@@ -4,7 +4,7 @@ import { site, nav } from '../data/site.js';
 import logo from '../assets/logo.png';
 const current = Astro.url.pathname;
 ---
-<header class="bg-white/85 border-b border-burgundy-100">
+<header class="bg-white border-b border-burgundy-100">
   <div class="mx-auto max-w-6xl px-4 py-2 nav:py-4 flex items-center justify-between gap-4">
     <a href="/" class="shrink-0" aria-label={`${site.name} home`}>
       <Image src={logo} alt={site.name} height={72} densities={[1, 2]} loading="eager" fetchpriority="high" class="h-14 nav:h-[72px] w-auto" />

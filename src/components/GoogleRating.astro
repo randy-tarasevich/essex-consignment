@@ -4,7 +4,7 @@
 import { site } from '../data/site.js';
 const { rating, reviewCount, reviewsUrl } = site.google;
 const Tag = reviewsUrl ? 'a' : 'div';
-// tone="light" for cream backgrounds (hero cartouche); default is for dark burgundy bands.
+// tone="light" for light backgrounds (homepage stats band); default is for dark burgundy bands.
 const { tone = 'dark' } = Astro.props;
 const styles = tone === 'light'
   ? 'border-t border-burgundy-100 pt-4 text-burgundy-800 hover:text-burgundy-600'

@@ -15,7 +15,7 @@ const highlights = results.filter((r) => r.featured);
     <p class="mt-2 max-w-2xl">If you’re not sure, ask. Whatever it is, we can sell it for more.</p>
     <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {categories.map((c) => (
-        <li class="bg-white p-5 ring-1 ring-burgundy-100 frame">
+        <li class="bg-paper p-5 ring-1 ring-burgundy-100 frame">
           <h3 class="text-lg">{c.name}</h3>
           <p class="mt-1 text-sm">{c.items}</p>
         </li>
@@ -24,12 +24,12 @@ const highlights = results.filter((r) => r.featured);
   </section>
 
   <!-- Sales results highlights -->
-  <section class="bg-white/60 border-y border-burgundy-100" aria-labelledby="results-heading">
+  <section class="bg-white border-y border-burgundy-100" aria-labelledby="results-heading">
     <div class="mx-auto max-w-6xl px-4 py-12">
       <h2 id="results-heading" class="text-3xl font-bold">We get more than auction estimates</h2>
       <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {highlights.map((r) => (
-          <li class="bg-cream p-5 ring-1 ring-burgundy-100 frame">
+          <li class="bg-paper p-5 ring-1 ring-burgundy-100 frame">
             <h3 class="text-lg">{r.item}</h3>
             <p class="mt-2 text-sm">Auction estimate {usd(r.estimate)}</p>
             <p class="font-serif lining-nums text-2xl font-bold text-burgundy-700">Sold for {usd(r.sold)}</p>
