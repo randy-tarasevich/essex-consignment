@@ -1,4 +1,4 @@
-// Cloudflare Worker: serves the Astro build from ./dist and handles /api/* (form submissions).
+// Cloudflare Worker: serves the Astro build from ./dist and handles /api/* (form submissions, Shopify webhooks).
 {
   "name": "essex-consignment",
   "main": "worker/index.js",
@@ -13,5 +13,10 @@
     // Only API requests run the Worker; everything else is served straight from ./dist
     "run_worker_first": ["/api/*"]
   },
-  "observability": { "enabled": true }
+  "observability": { "enabled": true },
+  // Debounces Shopify webhooks into one site rebuild (see RebuildDebouncer in worker/index.js)
+  "durable_objects": {
+    "bindings": [{ "name": "REBUILD_DEBOUNCER", "class_name": "RebuildDebouncer" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["RebuildDebouncer"] }]
 }

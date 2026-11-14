@@ -1,7 +1,8 @@
 // Essex Consignment: Cloudflare Worker.
 //
-// Serves the Astro site from ./dist and handles one API route:
-//   POST /api/inquiry  (Contact and Consign With Us forms)
+// Serves the Astro site from ./dist and handles two API routes:
+//   POST /api/inquiry          (Contact and Consign With Us forms)
+//   POST /api/shopify-webhook  (Shopify product/collection webhooks -> debounced site rebuild)
 //
 // Flow: spam check (honeypot + Cloudflare Turnstile) → find or create the
 // Shopify customer by email → add tag "website-contact" or "consignor" →
@@ -15,8 +16,12 @@
 //   SHOPIFY_ADMIN_TOKEN        Admin API token with write_customers
 //     or SHOPIFY_CLIENT_ID + SHOPIFY_CLIENT_SECRET (Dev Dashboard app, client-credentials grant)
 //   TURNSTILE_SECRET_KEY       Cloudflare Turnstile secret
+//   SHOPIFY_WEBHOOK_SECRET     Shopify admin → Settings → Notifications → Webhooks → signing secret
+//   DEPLOY_HOOK_URL            Cloudflare Workers Builds deploy hook (Settings → Builds → Deploy Hooks)
 // Optional:
 //   SHOPIFY_API_VERSION        default 2026-10
+
+import { DurableObject } from 'cloudflare:workers';
 
 const TAGS = { contact: 'website-contact', consignor: 'consignor' };
 const MAX = { name: 80, email: 254, phone: 40, message: 4000 };
@@ -28,9 +33,81 @@ export default {
       if (request.method !== 'POST') return json({ ok: false, error: 'Method not allowed' }, 405);
       return handleInquiry(request, env, ctx);
     }
+    if (url.pathname === '/api/shopify-webhook') {
+      if (request.method !== 'POST') return json({ ok: false, error: 'Method not allowed' }, 405);
+      return handleShopifyWebhook(request, env);
+    }
     return env.ASSETS.fetch(request);
   },
 };
+
+// ---------- Shopify webhook -> debounced rebuild ----------
+//
+// The homepage gallery is built from Shopify at build time, so product and collection
+// changes need a rebuild. Shopify sends one webhook per edit; a bulk edit can send dozens.
+// Every event resets a 90-second timer, so a burst of edits becomes one rebuild after
+// things go quiet. A steady stream of edits still rebuilds at least every 10 minutes.
+
+const REBUILD_QUIET_MS = 90_000;
+const REBUILD_MAX_WAIT_MS = 10 * 60_000;
+
+async function handleShopifyWebhook(request, env) {
+  const body = await request.text();
+  const valid = await verifyShopifyHmac(env.SHOPIFY_WEBHOOK_SECRET, body, request.headers.get('x-shopify-hmac-sha256'));
+  if (!valid) return json({ ok: false }, 401);
+
+  const topic = request.headers.get('x-shopify-topic') || 'unknown';
+  const stub = env.REBUILD_DEBOUNCER.get(env.REBUILD_DEBOUNCER.idFromName('site'));
+  const rebuildAt = await stub.schedule(topic);
+  console.log(`[webhook] ${topic}: rebuild scheduled for ${new Date(rebuildAt).toISOString()}`);
+  // Answer Shopify quickly; the rebuild happens later from the Durable Object alarm.
+  return json({ ok: true });
+}
+
+export async function verifyShopifyHmac(secret, body, signature) {
+  if (!secret || !signature) return false;
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  const mac = new Uint8Array(await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(body)));
+  const expected = btoa(String.fromCharCode(...mac));
+  if (expected.length !== signature.length) return false;
+  let diff = 0;
+  for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ signature.charCodeAt(i);
+  return diff === 0;
+}
+
+// When the rebuild should fire, given when this burst of events started.
+export function nextRebuildTime(now, burstStart) {
+  return Math.min(now + REBUILD_QUIET_MS, burstStart + REBUILD_MAX_WAIT_MS);
+}
+
+// One instance ("site") holds the timer in a Durable Object alarm, so it survives
+// between requests and redeploys.
+export class RebuildDebouncer extends DurableObject {
+
+  async schedule(topic) {
+    const now = Date.now();
+    const burstStart = (await this.ctx.storage.get('burstStart')) ?? now;
+    const count = ((await this.ctx.storage.get('count')) ?? 0) + 1;
+    const at = nextRebuildTime(now, burstStart);
+    await this.ctx.storage.put({ burstStart, count, lastTopic: topic });
+    await this.ctx.storage.setAlarm(at);
+    return at;
+  }
+
+  async alarm() {
+    const count = (await this.ctx.storage.get('count')) ?? 0;
+    if (!this.env.DEPLOY_HOOK_URL) {
+      console.error('[rebuild] DEPLOY_HOOK_URL not set; skipping rebuild');
+      await this.ctx.storage.deleteAll();
+      return;
+    }
+    const res = await fetch(this.env.DEPLOY_HOOK_URL, { method: 'POST' });
+    // Throwing makes Cloudflare retry the alarm with backoff.
+    if (!res.ok) throw new Error(`Deploy hook returned ${res.status}`);
+    console.log(`[rebuild] Triggered rebuild after ${count} Shopify event(s)`);
+    await this.ctx.storage.deleteAll();
+  }
+}
 
 // ---------- inquiry ----------
 
