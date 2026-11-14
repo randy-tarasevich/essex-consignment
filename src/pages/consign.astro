@@ -13,11 +13,11 @@ const highlights = results.filter((r) => r.featured);
   <section class="mx-auto max-w-6xl px-4 py-12" aria-labelledby="accept-heading">
     <h2 id="accept-heading" class="text-3xl font-bold">What we accept</h2>
     <p class="mt-2 max-w-2xl">If you’re not sure, ask. Whatever it is, we can sell it for more.</p>
-    <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <ul class="mt-8 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
       {categories.map((c) => (
-        <li class="bg-paper p-5 ring-1 ring-burgundy-100 frame">
-          <h3 class="text-lg">{c.name}</h3>
-          <p class="mt-1 text-sm">{c.items}</p>
+        <li class="bg-paper p-7 ring-1 ring-burgundy-100 frame">
+          <h3 class="text-2xl font-bold">{c.name}</h3>
+          <p class="mt-2 text-lg leading-relaxed">{c.items}</p>
         </li>
       ))}
     </ul>

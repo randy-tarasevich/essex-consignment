@@ -1,10 +1,9 @@
 // Content pulled from Al's print ads (Worldwide Consignment, "Sell your stuff",
 // "I Want Your Ash Tray", eBay Items Wanted). Confirm figures with Al before launch.
 
-// Headline numbers. TODO: confirm with Al. The ads say both 23 and 24 years,
-// and the 38,000 count may be out of date.
+// Headline numbers. 27 years confirmed by Miles (Nov 14, 2026); the 38,000 count may be out of date.
 export const stats = [
-  { value: '24 years', label: '5-star rated eBay seller' },
+  { value: '27 years', label: 'in business' },
   { value: '38,000', label: 'transactions worldwide' },
   // Third stat is calculated from `results` below, so it stays accurate as sales change.
 ];
@@ -21,7 +20,7 @@ export const categories = [
   { name: 'Toys, Comics & Games', items: 'Vintage toys, trains, Matchbox, Dinky, comic books, video games (Nintendo, Atari, Game Boy, Xbox)' },
   { name: 'Music & Records', items: 'Musical instruments, records, LPs, 33s and 45s' },
   { name: 'Books & Writing', items: 'Rare books and manuscripts, vintage pens' },
-  { name: 'Collectibles', items: 'Pocket knives, collectibles of every kind, anything you would list on eBay' },
+  { name: 'Collectibles', items: 'Collectibles of every kind, anything you would list on eBay' },
   { name: 'Automobiles', items: 'Classic, collector and exotic cars' },
 ];
 

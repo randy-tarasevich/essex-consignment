@@ -5,15 +5,26 @@ import { site } from '../data/site.js';
 const { rating, reviewCount, reviewsUrl } = site.google;
 const Tag = reviewsUrl ? 'a' : 'div';
 // tone="light" for light backgrounds (homepage stats band); default is for dark burgundy bands.
-const { tone = 'dark' } = Astro.props;
+const { tone = 'dark', size = 'sm' } = Astro.props;
 const styles = tone === 'light'
   ? 'border-t border-burgundy-100 pt-4 text-burgundy-800 hover:text-burgundy-600'
   : 'rounded-btn bg-white/10 px-4 py-2 text-white hover:bg-white/20';
 ---
-<Tag
-  {...(reviewsUrl && { href: reviewsUrl, target: '_blank', rel: 'noopener' })}
-  class:list={['inline-flex items-center gap-2 text-sm', styles]}
->
-  <span class="text-gold tracking-tight" aria-hidden="true">★★★★★</span>
-  <span><strong>{rating}</strong> on Google · {reviewCount} reviews</span>
-</Tag>
+{size === 'lg' ? (
+  <Tag
+    {...(reviewsUrl && { href: reviewsUrl, target: '_blank', rel: 'noopener' })}
+    class="flex flex-col items-center justify-center gap-1 text-ink hover:text-burgundy-700"
+  >
+    <span class="text-3xl text-gold tracking-tight sm:text-4xl" aria-hidden="true">★★★★★</span>
+    <span class="font-display text-3xl font-bold sm:text-4xl"><span class="lining-nums">{rating}</span> on Google</span>
+    <span class="text-base font-semibold uppercase tracking-wide">{reviewCount} five-star reviews</span>
+  </Tag>
+) : (
+  <Tag
+    {...(reviewsUrl && { href: reviewsUrl, target: '_blank', rel: 'noopener' })}
+    class:list={['inline-flex items-center gap-2 text-sm', styles]}
+  >
+    <span class="text-gold tracking-tight" aria-hidden="true">★★★★★</span>
+    <span><strong>{rating}</strong> on Google · {reviewCount} reviews</span>
+  </Tag>
+)}

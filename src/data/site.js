@@ -3,7 +3,7 @@ export const site = {
   name: 'Essex Consignment',
   tagline: 'Whatever it is, we can sell it for more!',
   description:
-    'Essex Consignment buys and sells estate furniture, antiques, art, jewelry, and collectibles in Essex, CT, with a top-rated eBay store for 24 years.',
+    'Essex Consignment buys and sells estate furniture, antiques, art, jewelry, and collectibles in Essex, CT, for 27 years, with a 5-star eBay store.',
   url: 'https://essexconsignment.com',
   phone: '(860) 767-9741',
   phoneHref: 'tel:+18607679741',

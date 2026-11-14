@@ -12,8 +12,8 @@ const highlights = results.filter((r) => r.featured).slice(0, 3);
   <!-- Consign prompt: keeps sellers' path near the top now that the hero is gone -->
   <section class="bg-burgundy-800 text-white" aria-label="Consign with us">
     <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-6">
-      <p class="font-display text-xl sm:text-2xl">Have something to sell? <span class="text-burgundy-100">{site.tagline}</span></p>
-      <a href="/consign/" class="rounded-btn bg-white px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-burgundy-800 hover:bg-burgundy-50">Consign with us</a>
+      <p class="font-display text-xl font-bold sm:text-2xl">Have something to sell? <span class="text-burgundy-100">{site.tagline}</span></p>
+      <a href="/consign/" class="rounded-btn bg-white px-6 py-3 text-xs font-extrabold uppercase tracking-[0.2em] text-burgundy-900 hover:bg-burgundy-50">Consign with us</a>
     </div>
   </section>
   <!-- Trust stats -->
@@ -27,7 +27,14 @@ const highlights = results.filter((r) => r.featured).slice(0, 3);
           </li>
         ))}
       </ul>
-      <div class="mt-6"><GoogleRating tone="light" /></div>
+      <!-- Trust badges: 5-star eBay seller + Google rating, showcased (client request Nov 14) -->
+      <div class="mt-10 grid gap-6 border-t border-burgundy-100 pt-10 sm:grid-cols-2">
+        <div class="flex flex-col items-center justify-center gap-1">
+          <span class="text-3xl text-gold tracking-tight sm:text-4xl" aria-hidden="true">★★★★★</span>
+          <p class="font-display text-3xl font-bold text-black sm:text-4xl">5-Star eBay Seller</p>
+        </div>
+        <GoogleRating tone="light" size="lg" />
+      </div>
     </div>
   </section>
   <!-- Sales results highlights -->

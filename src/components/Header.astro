@@ -7,12 +7,12 @@ const current = Astro.url.pathname;
 <header class="bg-white border-b border-burgundy-100">
   <div class="mx-auto max-w-6xl px-4 py-2 nav:py-4 flex items-center justify-between gap-4">
     <a href="/" class="shrink-0" aria-label={`${site.name} home`}>
-      <Image src={logo} alt={site.name} height={72} densities={[1, 2]} loading="eager" fetchpriority="high" class="h-14 nav:h-[72px] w-auto" />
+      <Image src={logo} alt={site.name} height={112} densities={[1, 2]} loading="eager" fetchpriority="high" class="h-20 nav:h-[112px] w-auto" />
     </a>
 
     <!-- Desktop nav -->
     <nav aria-label="Main" class="hidden nav:block">
-      <ul class="flex flex-wrap gap-x-8 gap-y-2 text-xs font-semibold uppercase tracking-[0.2em]">
+      <ul class="flex flex-wrap gap-x-7 gap-y-2 text-base font-bold uppercase tracking-[0.12em]">
         {nav.map((item) => (
           <li>
             <a
@@ -43,7 +43,7 @@ const current = Astro.url.pathname;
 
   <!-- Mobile menu panel -->
   <nav id="mobile-menu" aria-label="Main" class="hidden border-t border-burgundy-100 nav:hidden">
-    <ul class="mx-auto max-w-6xl px-4 py-2 text-sm font-semibold uppercase tracking-[0.2em]">
+    <ul class="mx-auto max-w-6xl px-4 py-2 text-base font-bold uppercase tracking-[0.15em]">
       {nav.map((item) => (
         <li class="border-b border-burgundy-50 last:border-0">
           <a
