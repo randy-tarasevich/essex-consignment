@@ -64,18 +64,40 @@ async function storefront(src, query, variables) {
   return json.data;
 }
 
+// Items listed at $0 in Shopify are "call for price" pieces: show "Inquire" instead of $0.00.
 export function formatPrice({ amount, currencyCode }) {
+  if (!(Number(amount) > 0)) return 'Inquire';
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: currencyCode }).format(Number(amount));
+}
+
+// Essex types product titles in ALL CAPS. Show them in title case on the site
+// ("ETHAN ALLEN PEDESTAL LEG BASE TABLE" -> "Ethan Allen Pedestal Leg Base Table").
+// Titles already in mixed case are left exactly as entered.
+const SMALL_WORDS = new Set(['a', 'an', 'and', 'as', 'at', 'by', 'for', 'in', 'of', 'on', 'or', 'the', 'to', 'with']);
+export function displayTitle(title) {
+  if (!title || /[a-z]/.test(title)) return title;
+  return title
+    .toLowerCase()
+    .split(/(\s+)/)
+    .map((word, i, words) => {
+      if (/^\s+$/.test(word)) return word;
+      const isFirst = i === 0;
+      const isLast = i === words.length - 1;
+      if (!isFirst && !isLast && SMALL_WORDS.has(word)) return word;
+      // Capitalize each part of hyphenated / slashed words: "mid-century" -> "Mid-Century".
+      return word.replace(/(^|[-/(])([a-z])/g, (_, sep, ch) => sep + ch.toUpperCase());
+    })
+    .join('');
 }
 
 export function toCard(p, domain) {
   return {
     id: p.id,
-    title: p.title,
+    title: displayTitle(p.title),
     price: formatPrice(p.priceRange.minVariantPrice),
     url: p.onlineStoreUrl || `https://${domain}/products/${p.handle}`,
     image: p.featuredImage
-      ? { src: p.featuredImage.url, alt: p.featuredImage.altText || p.title, width: p.featuredImage.width, height: p.featuredImage.height }
+      ? { src: p.featuredImage.url, alt: p.featuredImage.altText || displayTitle(p.title), width: p.featuredImage.width, height: p.featuredImage.height }
       : null,
   };
 }
