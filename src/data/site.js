@@ -36,7 +36,8 @@ export const site = {
 export const nav = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about/' },
-  { label: 'Announcements', href: '/announcements/' },
+  // Hidden from the nav until Al & Miles decide whether to keep the page (Nov 2026). The page itself still exists.
+  // { label: 'Announcements', href: '/announcements/' },
   { label: 'Consign With Us', href: '/consign/' },
   { label: 'Sales Results', href: '/results/' },
   { label: 'Contact', href: '/contact/' },
