@@ -39,6 +39,8 @@ const localBusiness = {
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <!-- Spanish on? Flag it before first paint so the nav shows our Spanish labels without a flash. -->
+    <script is:inline>if (/(?:^|;\s*)googtrans=\/en\/es/.test(document.cookie)) document.documentElement.classList.add('lang-es');</script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />

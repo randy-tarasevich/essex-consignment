@@ -33,14 +33,16 @@ export const site = {
   shopUrl: '', // TODO: Shopify storefront URL
 };
 
+// `es` = our own Spanish nav labels. Google Translate's are too long for the header and
+// get some wrong ("Home" -> "Hogar" = house), so the nav is excluded from translation.
 export const nav = [
-  { label: 'Home', href: '/' },
-  { label: 'About', href: '/about/' },
+  { label: 'Home', es: 'Inicio', href: '/' },
+  { label: 'About', es: 'Nosotros', href: '/about/' },
   // Hidden from the nav until Al & Miles decide whether to keep the page (Nov 2026). The page itself still exists.
-  // { label: 'Announcements', href: '/announcements/' },
-  { label: 'Consign With Us', href: '/consign/' },
-  { label: 'Sales Results', href: '/results/' },
-  { label: 'Contact', href: '/contact/' },
+  // { label: 'Announcements', es: 'Anuncios', href: '/announcements/' },
+  { label: 'Consign With Us', es: 'Consignar', href: '/consign/' },
+  { label: 'Sales Results', es: 'Resultados', href: '/results/' },
+  { label: 'Contact', es: 'Contacto', href: '/contact/' },
 ];
 
 // Gallery filters (client request, Nov 16).
@@ -51,18 +53,21 @@ export const shopCategories = [
   {
     slug: 'art',
     label: 'Art',
+    es: 'Arte',
     collections: ['art'],
     names: ['art', 'artwork', 'painting', 'paintings', 'prints', 'sculpture'],
   },
   {
     slug: 'home-living',
     label: 'Home & Living',
+    es: 'Hogar y Decoración',
     collections: ['home-living', 'home-and-living'],
     names: ['home & living', 'home and living', 'home', 'furniture', 'lighting', 'decor', 'home decor'],
   },
   {
     slug: 'glassware-dishware-collectables',
     label: 'Glassware/Dishware & Collectables',
+    es: 'Cristalería, Vajilla y Coleccionables',
     collections: ['glassware-dishware-collectables', 'glassware-dishware-collectibles', 'glassware', 'dishware', 'collectables', 'collectibles'],
     names: ['glassware', 'dishware', 'china', 'crystal', 'collectables', 'collectibles', 'collectable', 'collectible'],
   },

@@ -66,3 +66,6 @@ iframe.skiptranslate, .goog-te-banner-frame, #goog-gt-tt, .goog-te-balloon-frame
 .VIpgJd-ZVi9od-ORHb-OEVmcd, .VIpgJd-ZVi9od-aZ2wEe-wOHMyf, .VIpgJd-yAWNEb-L7lbkb { display: none !important; }
 .goog-text-highlight { background: none !important; box-shadow: none !important; }
 font[style] { background-color: transparent !important; box-shadow: none !important; }
+
+/* Bilingual nav labels (Header.astro): English by default, our Spanish when html.lang-es. */
+html:not(.lang-es) .i18n-es, html.lang-es .i18n-en { display: none; }
