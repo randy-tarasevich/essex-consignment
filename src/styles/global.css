@@ -1,17 +1,17 @@
 @import "tailwindcss";
-/* Self-hosted brand fonts (Fontsource, no Google Fonts CDN). Stand-ins until the client's licensed fonts arrive.
-   Bodoni Moda = high-contrast Didone display face for the "elegant, sharp" direction Miles asked for. */
-@import "@fontsource-variable/bodoni-moda";
-@import "@fontsource-variable/bodoni-moda/wght-italic.css";
-@import "@fontsource-variable/eb-garamond";
+/* Self-hosted brand font (Fontsource, no Google Fonts CDN).
+   Client direction (Miles, Nov 16): a Gothic face across the whole site, regular weight,
+   with Gothic Bold for the cost-comparison percentages and piece listing titles.
+   Libre Franklin = open-source Franklin Gothic. Swap --font-gothic if the designer names a specific Gothic. */
+@import "@fontsource-variable/libre-franklin";
 
 /* Essex Consignment brand tokens: burgundy + cream, taken from the current logo.
    Swap for exact values once the logo files arrive. */
 @theme {
   /* Breakpoints match the Henry Champion House project: Tailwind defaults
-     (sm 640, md 768, lg 1024, xl 1280) plus "nav" at 1152px, where the
+     (sm 640, md 768, lg 1024, xl 1280) plus "nav" at 1280px (raised from 1152px Nov 16 to fit the Shop menu + Español button), where the
      header switches from the menu button to the full desktop nav. */
-  --breakpoint-nav: 72rem;
+  --breakpoint-nav: 80rem;
 
   /* Square corners everywhere (client direction: sharp edges, no rounded "app" look).
      Clearing the radius scale makes every rounded-* utility a no-op. */
@@ -35,18 +35,17 @@
   --color-navy-800: #172645;
   --color-navy-900: #0e1830;
 
-  /* Display = high-contrast Didone serif (headings).
-     Serif = old-style book face like the logo's tagline (body text).
-     Swap the family names here if the designer's fonts differ. */
-  --font-display: "Bodoni Moda Variable", "Bodoni 72", Didot, Georgia, serif;
-  --font-serif: "EB Garamond Variable", Garamond, Georgia, "Times New Roman", serif;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  /* One Gothic family site-wide (Nov 16). display/serif/sans all point at it so existing classes keep working. */
+  --font-gothic: "Libre Franklin Variable", "Franklin Gothic Book", "Franklin Gothic", "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-gothic);
+  --font-serif: var(--font-gothic);
+  --font-sans: var(--font-gothic);
 }
 
 @layer base {
-  html { color: var(--color-ink); background: var(--color-paper); font-family: var(--font-serif); font-size: 1.0625rem; }
-  h1, h2 { font-family: var(--font-display); color: var(--color-burgundy-800); font-weight: 400; letter-spacing: 0.01em; }
-  h3 { font-family: var(--font-serif); color: var(--color-burgundy-800); font-weight: 600; }
+  html { color: var(--color-ink); background: var(--color-paper); font-family: var(--font-gothic); font-weight: 400; font-size: 1.0625rem; }
+  h1, h2 { font-family: var(--font-gothic); color: var(--color-burgundy-800); font-weight: 400; letter-spacing: 0.01em; }
+  h3 { font-family: var(--font-gothic); color: var(--color-burgundy-800); font-weight: 600; }
 }
 
 /* Boutique card frame: thin inset rule instead of a drop shadow. */
@@ -54,3 +53,16 @@
   outline: 1px solid var(--color-burgundy-100);
   outline-offset: -7px;
 }
+
+/* Gothic Bold: cost-comparison percentages and piece listing titles (client request, Nov 16). */
+@utility gothic-bold {
+  font-family: var(--font-gothic);
+  font-weight: 700;
+}
+
+/* Google Translate: hide its top banner and hover tooltips; keep the page from being pushed down. */
+body { top: 0 !important; position: static !important; }
+iframe.skiptranslate, .goog-te-banner-frame, #goog-gt-tt, .goog-te-balloon-frame,
+.VIpgJd-ZVi9od-ORHb-OEVmcd, .VIpgJd-ZVi9od-aZ2wEe-wOHMyf, .VIpgJd-yAWNEb-L7lbkb { display: none !important; }
+.goog-text-highlight { background: none !important; box-shadow: none !important; }
+font[style] { background-color: transparent !important; box-shadow: none !important; }

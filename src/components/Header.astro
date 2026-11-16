@@ -1,8 +1,11 @@
 ---
 import { Image } from 'astro:assets';
-import { site, nav } from '../data/site.js';
+import { site, nav, shopCategories } from '../data/site.js';
 import logo from '../assets/logo.png';
 const current = Astro.url.pathname;
+// Shop menu (client request, Nov 16): each category opens the homepage gallery pre-filtered.
+const shopLinks = shopCategories.map((c) => ({ label: c.label, href: `/?category=${c.slug}#featured` }));
+const langBtn = 'lang-toggle notranslate rounded-btn border border-burgundy-700 font-bold uppercase tracking-[0.12em] text-burgundy-700 hover:bg-burgundy-50';
 ---
 <header class="bg-white border-b border-burgundy-100">
   <div class="mx-auto max-w-6xl px-4 py-2 nav:py-4 flex items-center justify-between gap-4">
@@ -12,24 +15,42 @@ const current = Astro.url.pathname;
 
     <!-- Desktop nav -->
     <nav aria-label="Main" class="hidden nav:block">
-      <ul class="flex flex-wrap gap-x-7 gap-y-2 text-base font-bold uppercase tracking-[0.12em]">
-        {nav.map((item) => (
-          <li>
-            <a
-              href={item.href}
-              class:list={['hover:text-burgundy-600', current === item.href && 'text-burgundy-700 underline underline-offset-4']}
-              aria-current={current === item.href ? 'page' : undefined}
-            >{item.label}</a>
-          </li>
+      <ul class="flex items-center gap-x-4 whitespace-nowrap text-base font-bold uppercase tracking-[0.08em]">
+        {nav.map((item, i) => (
+          <>
+            <li>
+              <a
+                href={item.href}
+                class:list={['hover:text-burgundy-600', current === item.href && 'text-burgundy-700 underline underline-offset-4']}
+                aria-current={current === item.href ? 'page' : undefined}
+              >{item.label}</a>
+            </li>
+            {i === 0 && (
+              <li class="relative" id="shop-menu">
+                <button type="button" id="shop-toggle" aria-expanded="false" aria-controls="shop-panel" class="inline-flex items-center gap-1 font-bold uppercase tracking-[0.08em] hover:text-burgundy-600">
+                  Shop
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true"><path d="M5.5 7.5 10 12l4.5-4.5z"/></svg>
+                </button>
+                <ul id="shop-panel" class="absolute left-0 top-full z-20 mt-3 hidden w-72 bg-white py-2 text-sm normal-case tracking-normal shadow-lg ring-1 ring-burgundy-100">
+                  <li><a href="/#featured" class="block px-4 py-2 hover:bg-burgundy-50">All featured pieces</a></li>
+                  {shopLinks.map((l) => <li><a href={l.href} class="block px-4 py-2 hover:bg-burgundy-50">{l.label}</a></li>)}
+                </ul>
+              </li>
+            )}
+          </>
         ))}
       </ul>
     </nav>
-    <a href={site.phoneHref} class="hidden nav:inline-block rounded-btn bg-burgundy-700 px-4 py-2 text-sm font-semibold tracking-wider text-white hover:bg-burgundy-800">
+    <div class="hidden nav:flex shrink-0 items-center gap-3 whitespace-nowrap">
+    <button type="button" class={`${langBtn} px-3 py-2 text-sm tracking-[0.08em]`} translate="no" aria-label="Ver este sitio en español" data-lang-label-en="Español" data-lang-label-es="English">Español</button>
+    <a href={site.phoneHref} class="inline-block rounded-btn bg-burgundy-700 px-4 py-2 text-sm font-semibold tracking-wider text-white hover:bg-burgundy-800">
       {site.phone}
     </a>
+    </div>
 
     <!-- Mobile: call + menu buttons -->
     <div class="flex items-center gap-2 nav:hidden">
+      <button type="button" class={`${langBtn} h-11 px-3 text-xs`} translate="no" aria-label="Ver este sitio en español" data-lang-label-en="ES" data-lang-label-es="EN">ES</button>
       <a href={site.phoneHref} class="inline-flex h-11 w-11 items-center justify-center rounded-btn bg-burgundy-700 text-white" aria-label={`Call ${site.phone}`}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>
       </a>
@@ -44,20 +65,97 @@ const current = Astro.url.pathname;
   <!-- Mobile menu panel -->
   <nav id="mobile-menu" aria-label="Main" class="hidden border-t border-burgundy-100 nav:hidden">
     <ul class="mx-auto max-w-6xl px-4 py-2 text-base font-bold uppercase tracking-[0.15em]">
-      {nav.map((item) => (
-        <li class="border-b border-burgundy-50 last:border-0">
-          <a
-            href={item.href}
-            class:list={['block py-3', current === item.href && 'text-burgundy-700']}
-            aria-current={current === item.href ? 'page' : undefined}
-          >{item.label}</a>
-        </li>
+      {nav.map((item, i) => (
+        <>
+          <li class="border-b border-burgundy-50 last:border-0">
+            <a
+              href={item.href}
+              class:list={['block py-3', current === item.href && 'text-burgundy-700']}
+              aria-current={current === item.href ? 'page' : undefined}
+            >{item.label}</a>
+          </li>
+          {i === 0 && (
+            <li class="border-b border-burgundy-50 py-3">
+              <span>Shop</span>
+              <ul class="mt-2 space-y-1 pl-4 text-sm normal-case tracking-normal font-semibold">
+                {shopLinks.map((l) => <li><a href={l.href} class="block py-2 text-burgundy-700">{l.label}</a></li>)}
+              </ul>
+            </li>
+          )}
+        </>
       ))}
     </ul>
   </nav>
 </header>
 
+<!-- Google Translate mounts here (hidden; our own buttons drive it). -->
+<div id="google_translate_element" class="hidden" aria-hidden="true"></div>
+
 <script>
+  // Shop dropdown (desktop)
+  const shopBtn = document.getElementById('shop-toggle');
+  const shopPanel = document.getElementById('shop-panel');
+  const setShop = (open: boolean) => {
+    shopBtn?.setAttribute('aria-expanded', String(open));
+    shopPanel?.classList.toggle('hidden', !open);
+  };
+  shopBtn?.addEventListener('click', () => setShop(shopBtn.getAttribute('aria-expanded') !== 'true'));
+  document.addEventListener('click', (e) => {
+    if (!document.getElementById('shop-menu')?.contains(e.target as Node)) setShop(false);
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setShop(false); });
+
+  // English / Spanish (client request, Nov 16) via Google Translate.
+  // Google's script loads only after a visitor picks Español; the googtrans cookie keeps
+  // Spanish on as they move between pages. Picking English clears it.
+  const COOKIE = 'googtrans';
+  const isSpanish = () => /(?:^|;\s*)googtrans=\/en\/es/.test(document.cookie);
+  const setCookie = (value: string, maxAge: number) => {
+    const host = location.hostname;
+    const domains = ['', host, '.' + host.replace(/^www\./, '')];
+    for (const d of domains) {
+      document.cookie = `${COOKIE}=${value}; path=/; max-age=${maxAge}; SameSite=Lax${d ? `; domain=${d}` : ''}`;
+    }
+  };
+  function loadTranslate() {
+    if (document.getElementById('gt-script')) return;
+    (window as any).googleTranslateElementInit = () => {
+      new (window as any).google.translate.TranslateElement(
+        { pageLanguage: 'en', includedLanguages: 'es', autoDisplay: false },
+        'google_translate_element'
+      );
+    };
+    const s = document.createElement('script');
+    s.id = 'gt-script';
+    s.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+    s.async = true;
+    document.head.appendChild(s);
+  }
+  const langButtons = document.querySelectorAll<HTMLButtonElement>('.lang-toggle');
+  function paintLang() {
+    const es = isSpanish();
+    langButtons.forEach((b) => {
+      b.textContent = (es ? b.dataset.langLabelEs : b.dataset.langLabelEn) ?? '';
+      b.setAttribute('aria-label', es ? 'View this site in English' : 'Ver este sitio en español');
+      b.setAttribute('lang', es ? 'en' : 'es');
+    });
+  }
+  langButtons.forEach((b) =>
+    b.addEventListener('click', () => {
+      if (isSpanish()) {
+        setCookie('', 0);
+        location.reload();
+      } else {
+        setCookie('/en/es', 60 * 60 * 24 * 365);
+        paintLang();
+        loadTranslate();
+      }
+    })
+  );
+  paintLang();
+  if (isSpanish()) loadTranslate();
+
+  // Mobile menu
   const btn = document.getElementById('menu-toggle');
   const menu = document.getElementById('mobile-menu');
   btn?.addEventListener('click', () => {

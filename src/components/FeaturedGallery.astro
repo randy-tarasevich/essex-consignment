@@ -1,22 +1,26 @@
 ---
-// Homepage gallery: 10 for-sale items, Shopify "Featured" collection first, topped up with the newest products.
+// Homepage gallery: for-sale items, Shopify "Featured" collection first, topped up with the newest products.
+// Shows 10 by default; the Category and Price filters (client request, Nov 16) search the whole pool.
+// Filters are linkable: /?category=art&price=low#featured (the nav's Shop menu uses this).
 // Each card links to its Shopify product page. Sold items drop off on the next build.
-import { getFeaturedItems } from '../lib/shopify.js';
-import { site } from '../data/site.js';
+import { getFeaturedItems, DEFAULT_VISIBLE } from '../lib/shopify.js';
+import { site, shopCategories, priceTiers } from '../data/site.js';
 
 // The homepage opens with this gallery, so it carries the page's H1 there.
 const { headingLevel = 'h2', eyebrow = '' } = Astro.props;
 const Heading = headingLevel;
 
 const { items, source } = await getFeaturedItems();
-const placeholders = Array.from({ length: 10 }, (_, i) => ({ id: `p${i}`, title: `Featured item ${i + 1}`, price: '$—', url: '#', image: null }));
+const placeholders = Array.from({ length: 10 }, (_, i) => ({ id: `p${i}`, title: `Featured item ${i + 1}`, price: '$—', url: '#', image: null, category: null, priceTier: null }));
 const cards = items.length ? items : placeholders;
 const note =
   source === 'mock' ? 'Preview: demo products from mock.shop'
   : items.length === 0 ? 'Preview: Shopify not connected yet'
   : '';
+
+const pill = 'gallery-filter rounded-btn border border-burgundy-100 bg-white px-3 py-2 text-xs font-bold uppercase tracking-[0.12em] text-burgundy-800 hover:border-burgundy-700 aria-pressed:border-burgundy-700 aria-pressed:bg-burgundy-700 aria-pressed:text-white';
 ---
-<section class="mx-auto max-w-6xl px-4 py-12 sm:py-16" aria-labelledby="featured-heading">
+<section id="featured" class="mx-auto max-w-6xl scroll-mt-4 px-4 py-12 sm:py-16" aria-labelledby="featured-heading">
   <div class="flex flex-wrap items-end justify-between gap-4">
     <div>
       {eyebrow && <p class="text-sm font-bold uppercase tracking-[0.2em] text-burgundy-700">{eyebrow}</p>}
@@ -27,9 +31,34 @@ const note =
       {note && <p class="text-xs text-burgundy-600">{note}</p>}
     </div>
   </div>
-  <ul class="mt-8 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-5">
+
+  <!-- Filters -->
+  <div class="mt-6 flex flex-col gap-3 border-y border-burgundy-100 py-4 lg:flex-row lg:items-center lg:gap-8">
+    <div class="flex flex-wrap items-center gap-2" role="group" aria-labelledby="filter-category-label">
+      <span id="filter-category-label" class="mr-1 text-xs font-bold uppercase tracking-[0.2em] text-ink/70">Category</span>
+      <button type="button" class={pill} data-filter="category" data-value="" aria-pressed="true">All</button>
+      {shopCategories.map((c) => (
+        <button type="button" class={pill} data-filter="category" data-value={c.slug} aria-pressed="false">{c.label}</button>
+      ))}
+    </div>
+    <div class="flex flex-wrap items-center gap-2" role="group" aria-labelledby="filter-price-label">
+      <span id="filter-price-label" class="mr-1 text-xs font-bold uppercase tracking-[0.2em] text-ink/70">Price</span>
+      <button type="button" class={pill} data-filter="price" data-value="" aria-pressed="true">All</button>
+      {priceTiers.map((t) => (
+        <button type="button" class={pill} data-filter="price" data-value={t.slug} aria-pressed="false" title={t.hint}>{t.label}</button>
+      ))}
+    </div>
+  </div>
+  <p id="gallery-status" class="mt-3 text-sm text-ink/70" aria-live="polite"></p>
+
+  <ul id="gallery-grid" class="mt-6 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-5">
     {cards.map((item, i) => (
-      <li class="group bg-white ring-1 ring-burgundy-100 overflow-hidden">
+      <li
+        class:list={['gallery-card group bg-white ring-1 ring-burgundy-100 overflow-hidden', i >= DEFAULT_VISIBLE && 'hidden']}
+        data-category={item.category ?? ''}
+        data-price={item.priceTier ?? ''}
+        data-default={i < DEFAULT_VISIBLE ? '1' : undefined}
+      >
         <a href={item.url} class="block h-full" target={item.url.startsWith('http') ? '_blank' : undefined} rel={item.url.startsWith('http') ? 'noopener' : undefined}>
           <div class="aspect-square bg-burgundy-50 overflow-hidden">
             {item.image && (
@@ -45,7 +74,7 @@ const note =
             )}
           </div>
           <div class="p-4">
-            <h3 class="text-lg font-medium leading-snug text-ink">{item.title}</h3>
+            <h3 class="gothic-bold text-lg leading-snug text-ink">{item.title}</h3>
             <p class="mt-1 text-base lining-nums tabular-nums text-burgundy-700">{item.price}</p>
             <span class="mt-3 inline-block text-xs font-semibold uppercase tracking-[0.2em] text-burgundy-700 group-hover:underline">Shop now →</span>
           </div>
@@ -53,4 +82,54 @@ const note =
       </li>
     ))}
   </ul>
+  <p id="gallery-empty" class="mt-6 hidden bg-white p-6 text-center ring-1 ring-burgundy-100">
+    No pieces match those filters right now. New items arrive all the time — <a href="/contact/" class="font-semibold text-burgundy-700 underline">ask us what’s coming in</a>.
+  </p>
 </section>
+
+<script>
+  const buttons = Array.from(document.querySelectorAll<HTMLButtonElement>('.gallery-filter'));
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('.gallery-card'));
+  const empty = document.getElementById('gallery-empty');
+  const status = document.getElementById('gallery-status');
+  const state = { category: '', price: '' };
+
+  function apply(updateUrl = true) {
+    const filtering = Boolean(state.category || state.price);
+    let shown = 0;
+    for (const card of cards) {
+      const match = filtering
+        ? (!state.category || card.dataset.category === state.category) && (!state.price || card.dataset.price === state.price)
+        : card.dataset.default === '1';
+      card.classList.toggle('hidden', !match);
+      if (match) shown++;
+    }
+    for (const b of buttons) {
+      b.setAttribute('aria-pressed', String(state[b.dataset.filter as 'category' | 'price'] === b.dataset.value));
+    }
+    empty?.classList.toggle('hidden', shown > 0);
+    if (status) status.textContent = filtering ? `Showing ${shown} ${shown === 1 ? 'piece' : 'pieces'}` : '';
+    if (updateUrl) {
+      const url = new URL(location.href);
+      for (const key of ['category', 'price'] as const) {
+        if (state[key]) url.searchParams.set(key, state[key]);
+        else url.searchParams.delete(key);
+      }
+      history.replaceState(null, '', url);
+    }
+  }
+
+  for (const b of buttons) {
+    b.addEventListener('click', () => {
+      state[b.dataset.filter as 'category' | 'price'] = b.dataset.value ?? '';
+      apply();
+    });
+  }
+
+  // Deep links from the nav's Shop menu: /?category=art#featured
+  const params = new URLSearchParams(location.search);
+  const valid = (key: string, v: string | null) => buttons.some((b) => b.dataset.filter === key && b.dataset.value === v);
+  if (valid('category', params.get('category'))) state.category = params.get('category')!;
+  if (valid('price', params.get('price'))) state.price = params.get('price')!;
+  if (state.category || state.price) apply(false);
+</script>

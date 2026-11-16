@@ -42,3 +42,36 @@ export const nav = [
   { label: 'Sales Results', href: '/results/' },
   { label: 'Contact', href: '/contact/' },
 ];
+
+// Gallery filters (client request, Nov 16).
+// A piece lands in a category if it's in one of the listed Shopify collections (by handle),
+// or its Shopify product type / a tag matches one of the listed names (case-insensitive).
+// Easiest for Miles: create these three collections in Shopify and add pieces to them.
+export const shopCategories = [
+  {
+    slug: 'art',
+    label: 'Art',
+    collections: ['art'],
+    names: ['art', 'artwork', 'painting', 'paintings', 'prints', 'sculpture'],
+  },
+  {
+    slug: 'home-living',
+    label: 'Home & Living',
+    collections: ['home-living', 'home-and-living'],
+    names: ['home & living', 'home and living', 'home', 'furniture', 'lighting', 'decor', 'home decor'],
+  },
+  {
+    slug: 'glassware-dishware-collectables',
+    label: 'Glassware/Dishware & Collectables',
+    collections: ['glassware-dishware-collectables', 'glassware-dishware-collectibles', 'glassware', 'dishware', 'collectables', 'collectibles'],
+    names: ['glassware', 'dishware', 'china', 'crystal', 'collectables', 'collectibles', 'collectable', 'collectible'],
+  },
+];
+
+// Price filter tiers. TODO: confirm cut-offs with Miles.
+// Low: under $100 · Medium: $100–$499 · High: $500+ ("Inquire" / call-for-price pieces count as High).
+export const priceTiers = [
+  { slug: 'low', label: 'Low', hint: 'Under $100', max: 100 },
+  { slug: 'medium', label: 'Medium', hint: '$100–$499', max: 500 },
+  { slug: 'high', label: 'High', hint: '$500 & up', max: Infinity },
+];

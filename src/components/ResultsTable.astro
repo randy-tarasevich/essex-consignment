@@ -14,7 +14,7 @@ const { items, caption = 'Actual items sold: auction estimate compared with the 
           <div><dt class="text-ink/70">Auction estimate</dt><dd class="font-serif lining-nums">{usd(r.estimate)}</dd></div>
           <div><dt class="text-ink/70">Sold by Essex</dt><dd class="font-serif lining-nums text-lg font-bold text-burgundy-700">{usd(r.sold)}</dd></div>
         </dl>
-        <p class="mt-2 text-sm font-semibold text-navy-600">{pctOver(r)}% over estimate</p>
+        <p class="mt-2 text-sm text-navy-600"><span class="gothic-bold text-base">{pctOver(r)}%</span> over estimate</p>
       </li>
     ))}
   </ul>
@@ -39,7 +39,7 @@ const { items, caption = 'Actual items sold: auction estimate compared with the 
           <th scope="row" class="py-3 pr-4 font-normal">{r.item}</th>
           <td class="py-3 pr-4 text-right font-serif lining-nums tabular-nums">{usd(r.estimate)}</td>
           <td class="py-3 pr-4 text-right font-serif lining-nums font-bold tabular-nums text-burgundy-700">{usd(r.sold)}</td>
-          <td class="py-3 text-right font-serif lining-nums tabular-nums text-navy-600">+{pctOver(r)}%</td>
+          <td class="py-3 text-right gothic-bold lining-nums tabular-nums text-navy-600">+{pctOver(r)}%</td>
         </tr>
       ))}
     </tbody>

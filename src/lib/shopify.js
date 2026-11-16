@@ -7,8 +7,13 @@
 //
 // Runs at build time only, so the token never reaches the browser.
 
+import { shopCategories, priceTiers } from '../data/site.js';
+
 const API_VERSION = import.meta.env.PUBLIC_SHOPIFY_API_VERSION || '2026-10';
-const MAX_ITEMS = 10;
+
+// The gallery shows 10 pieces by default; the category / price filters search a larger pool.
+export const DEFAULT_VISIBLE = 10;
+const POOL_SIZE = 60;
 
 function source() {
   const domain = import.meta.env.PUBLIC_SHOPIFY_STORE_DOMAIN;
@@ -33,6 +38,9 @@ const PRODUCT_FIELDS = `
   handle
   availableForSale
   onlineStoreUrl
+  productType
+  tags
+  collections(first: 20) { nodes { handle } }
   featuredImage { url(transform: { maxWidth: 800, maxHeight: 800 }) altText width height }
   priceRange { minVariantPrice { amount currencyCode } }
 `;
@@ -90,8 +98,27 @@ export function displayTitle(title) {
     .join('');
 }
 
+// Which gallery category a product belongs to (see shopCategories in site.js), or null.
+export function categoryOf(p) {
+  const handles = new Set((p.collections?.nodes ?? []).map((c) => c.handle.toLowerCase()));
+  const names = new Set([p.productType, ...(p.tags ?? [])].filter(Boolean).map((n) => n.trim().toLowerCase()));
+  const byCollection = shopCategories.find((c) => c.collections.some((h) => handles.has(h)));
+  if (byCollection) return byCollection.slug;
+  return shopCategories.find((c) => c.names.some((n) => names.has(n)))?.slug ?? null;
+}
+
+// Low / medium / high (see priceTiers in site.js). $0 "Inquire" pieces count as high.
+export function priceTierOf({ amount }) {
+  const n = Number(amount);
+  if (!(n > 0)) return priceTiers[priceTiers.length - 1].slug;
+  return priceTiers.find((t) => n < t.max).slug;
+}
+
 export function toCard(p, domain) {
   return {
+    category: categoryOf(p),
+    priceTier: priceTierOf(p.priceRange.minVariantPrice),
+    priceValue: Number(p.priceRange.minVariantPrice.amount) || null,
     id: p.id,
     title: displayTitle(p.title),
     price: formatPrice(p.priceRange.minVariantPrice),
@@ -103,26 +130,26 @@ export function toCard(p, domain) {
 }
 
 /**
- * Up to 10 for-sale items: the "Featured" collection first, then the store's newest
- * products to fill any empty spots. Returns { items, source } and never throws,
+ * A pool of for-sale items: the "Featured" collection first, then the store's newest
+ * products. The gallery shows the first 10 by default and filters across the whole pool. Returns { items, source } and never throws,
  * so a Shopify outage can't break the build.
  */
 export async function getFeaturedItems({ handle = 'featured' } = {}) {
   const src = source();
   if (!src) return { items: [], source: 'none' };
   try {
-    // Ask for extra so sold items can drop off and still leave 10.
-    const data = await storefront(src, FEATURED_QUERY, { handle, first: 30 });
+    // Ask for a full pool so filters have plenty to search and sold items can drop off.
+    const data = await storefront(src, FEATURED_QUERY, { handle, first: POOL_SIZE });
     const featured = data.collection?.products.nodes ?? [];
     if (!data.collection) console.warn(`[shopify] Collection "${handle}" not found on ${src.domain}; using newest products`);
 
     let nodes = featured.filter((p) => p.availableForSale);
-    if (nodes.length < MAX_ITEMS) {
-      const newest = (await storefront(src, NEWEST_QUERY, { first: 30 })).products.nodes;
+    if (nodes.length < POOL_SIZE) {
+      const newest = (await storefront(src, NEWEST_QUERY, { first: POOL_SIZE })).products.nodes;
       const seen = new Set(nodes.map((p) => p.id));
       nodes = nodes.concat(newest.filter((p) => p.availableForSale && !seen.has(p.id)));
     }
-    const items = nodes.slice(0, MAX_ITEMS).map((p) => toCard(p, src.domain));
+    const items = nodes.slice(0, POOL_SIZE).map((p) => toCard(p, src.domain));
     return { items, source: src.kind };
   } catch (err) {
     console.warn(`[shopify] Could not load featured items: ${err.message}`);
