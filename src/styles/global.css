@@ -5,6 +5,17 @@
    Libre Franklin = open-source Franklin Gothic. Swap --font-gothic if the designer names a specific Gothic. */
 @import "@fontsource-variable/libre-franklin";
 
+/* Size-matched stand-in shown for the split second before Libre Franklin loads, so text
+   doesn't jump when the real font swaps in (Nov 16). Metrics measured from the font files. */
+@font-face {
+  font-family: "Libre Franklin Fallback";
+  src: local("Arial"), local("ArialMT"), local("Liberation Sans");
+  size-adjust: 101.82%;
+  ascent-override: 94.88%;
+  descent-override: 24.16%;
+  line-gap-override: 0%;
+}
+
 /* Essex Consignment brand tokens: burgundy + cream, taken from the current logo.
    Swap for exact values once the logo files arrive. */
 @theme {
@@ -36,14 +47,14 @@
   --color-navy-900: #0e1830;
 
   /* One Gothic family site-wide (Nov 16). display/serif/sans all point at it so existing classes keep working. */
-  --font-gothic: "Libre Franklin Variable", "Franklin Gothic Book", "Franklin Gothic", "Helvetica Neue", Arial, sans-serif;
+  --font-gothic: "Libre Franklin Variable", "Libre Franklin Fallback", "Franklin Gothic Book", "Franklin Gothic", "Helvetica Neue", Arial, sans-serif;
   --font-display: var(--font-gothic);
   --font-serif: var(--font-gothic);
   --font-sans: var(--font-gothic);
 }
 
 @layer base {
-  html { color: var(--color-ink); background: var(--color-paper); font-family: var(--font-gothic); font-weight: 400; font-size: 1.0625rem; }
+  html { scrollbar-gutter: stable; color: var(--color-ink); background: var(--color-paper); font-family: var(--font-gothic); font-weight: 400; font-size: 1.0625rem; }
   h1, h2 { font-family: var(--font-gothic); color: var(--color-burgundy-800); font-weight: 400; letter-spacing: 0.01em; }
   h3 { font-family: var(--font-gothic); color: var(--color-burgundy-800); font-weight: 600; }
 }
