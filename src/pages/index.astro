@@ -6,9 +6,9 @@ import { site } from '../data/site.js';
 import { stats, results, usd } from '../data/consign.js';
 const highlights = results.filter((r) => r.featured).slice(0, 3);
 ---
-<BaseLayout>
+<BaseLayout pageTitle="Essex Consignment | Estate Furniture & Objets d'Art in Essex, CT">
   <!-- Featured items lead the page (designer direction, Nov 2026: hero removed). -->
-  <FeaturedGallery headingLevel="h1" eyebrow="Essex Consignment · Estate furniture & objets d'art · Essex, CT" />
+  <FeaturedGallery headingLevel="h1" />
   <!-- Consign prompt: keeps sellers' path near the top now that the hero is gone -->
   <section class="bg-burgundy-800 text-white" aria-label="Consign with us">
     <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-6">

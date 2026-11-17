@@ -6,8 +6,9 @@ import { site } from '../data/site.js';
 // Preload the brand font so it's ready before first paint (no text shift between pages).
 import fontUrl from '@fontsource-variable/libre-franklin/files/libre-franklin-latin-wght-normal.woff2?url';
 
-const { title, description = site.description } = Astro.props;
-const pageTitle = title ? `${title} | ${site.name}` : `${site.name} | Essex, CT`;
+const { title, description = site.description, pageTitle: fullTitle } = Astro.props;
+// fullTitle overrides the whole <title> (homepage carries the keywords from the old eyebrow line, removed Nov 16).
+const pageTitle = fullTitle ?? (title ? `${title} | ${site.name}` : `${site.name} | Essex, CT`);
 const canonical = new URL(Astro.url.pathname, site.url).href;
 
 const localBusiness = {
