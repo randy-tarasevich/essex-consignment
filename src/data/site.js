@@ -39,6 +39,8 @@ export const site = {
     reviewCount: 7,
     reviewsUrl: 'https://maps.app.goo.gl/guT2FEqCHgnAHuct5', // Google Maps listing (reviews tab is one tap away)
   },
+  // eBay store, linked from the homepage "5-Star eBay Seller" badge.
+  ebayUrl: 'https://www.ebay.com/str/aaestatesales',
   // Stand-in from the JPG Miles texted (Nov 6). Replace src/assets/logo.png + public/logo.png with the designer's file.
   logo: '/logo.png',
   ogImage: '/og-image.png',

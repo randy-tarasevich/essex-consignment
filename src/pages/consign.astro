@@ -4,7 +4,7 @@ import PageHeader from '../components/PageHeader.astro';
 import InquiryForm from '../components/InquiryForm.astro';
 import { categories, situations, results, usd } from '../data/consign.js';
 import { site } from '../data/site.js';
-const highlights = results.filter((r) => r.featured);
+const highlights = results.filter((r) => r.homepage).sort((a, b) => a.homepage - b.homepage);
 ---
 <BaseLayout title="Consign With Us" description="Consign furniture, antiques, art, jewelry, collectibles, and more with Essex Consignment. From an ashtray to a Picasso, we sell for the highest price.">
   <PageHeader title="Consign With Us" intro="From an ashtray to a Picasso, one of the best places on earth to sell anything you have. We sell for the highest price and give you back the best returns in the business." />

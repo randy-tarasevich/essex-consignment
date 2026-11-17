@@ -38,15 +38,16 @@ export const situations = [
 
 // Actual items sold: auction estimate vs. what Essex Consignment got.
 // From the "Sell your stuff" ad. Numbers are whole dollars.
-// featured: shown as highlights on the homepage and consign page.
+// homepage: highlights shown on the homepage "Sell your stuff" section and the consign page, in this order (1-3).
+// Miles (Nov 17): one each of Art, Car, Furniture.
 export const results = [
   { category: 'Sterling Silver', item: 'Georg Jensen 78-piece flatware set', estimate: 4250, sold: 6500 },
-  { category: 'Fine Art', item: 'Norman Rockwell oil painting', estimate: 250000, sold: 400000, featured: true },
-  { category: 'Fine Art', item: 'Alexander Calder gouache, Form', estimate: 40000, sold: 65000, featured: true },
+  { category: 'Fine Art', item: 'Norman Rockwell oil painting', estimate: 250000, sold: 400000, homepage: 1 },
+  { category: 'Fine Art', item: 'Alexander Calder gouache, Form', estimate: 40000, sold: 65000 },
   { category: 'Fine Art', item: 'Guy Wiggins oil painting', estimate: 18000, sold: 30000 },
-  { category: 'Furniture', item: 'Baker vintage dining table with 8 chairs', estimate: 1500, sold: 4500, featured: true },
+  { category: 'Furniture', item: 'Baker vintage dining table with 8 chairs', estimate: 1500, sold: 4500, homepage: 3 },
   { category: 'Furniture', item: 'Ethan Allen country pine table with 8 chairs', estimate: 1500, sold: 3995 },
-  { category: 'Automobiles', item: '1984 Ferrari 308 GTS', estimate: 18000, sold: 34000, featured: true },
+  { category: 'Automobiles', item: '1984 Ferrari 308 GTS', estimate: 18000, sold: 34000, homepage: 2 },
   { category: 'Automobiles', item: '2001 Porsche Carrera 4 Cabriolet', estimate: 14000, sold: 21000 },
   { category: 'Fine China', item: 'Meissen 91-piece set', estimate: 450, sold: 649 },
   { category: 'Baseball Cards', item: 'Hank Aaron 1954 card', estimate: 300, sold: 800 },

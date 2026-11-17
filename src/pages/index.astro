@@ -4,7 +4,7 @@ import FeaturedGallery from '../components/FeaturedGallery.astro';
 import GoogleRating from '../components/GoogleRating.astro';
 import { site } from '../data/site.js';
 import { stats, results, usd } from '../data/consign.js';
-const highlights = results.filter((r) => r.featured).slice(0, 3);
+const highlights = results.filter((r) => r.homepage).sort((a, b) => a.homepage - b.homepage);
 ---
 <BaseLayout pageTitle="Essex Consignment | Estate Furniture & Objets d'Art in Essex, CT">
   <!-- Featured items lead the page (designer direction, Nov 2026: hero removed). -->
@@ -29,10 +29,11 @@ const highlights = results.filter((r) => r.featured).slice(0, 3);
       </ul>
       <!-- Trust badges: 5-star eBay seller + Google rating, showcased (client request Nov 14) -->
       <div class="mt-10 grid gap-6 border-t border-burgundy-100 pt-10 sm:grid-cols-2">
-        <div class="flex flex-col items-center justify-center gap-1">
+        <a href={site.ebayUrl} target="_blank" rel="noopener" class="flex flex-col items-center justify-center gap-1 text-black hover:text-burgundy-700">
           <span class="text-3xl text-gold tracking-tight sm:text-4xl" aria-hidden="true">★★★★★</span>
-          <p class="font-display text-3xl font-bold text-black sm:text-4xl">5-Star eBay Seller</p>
-        </div>
+          <span class="font-display text-3xl font-bold sm:text-4xl">5-Star eBay Seller</span>
+          <span class="text-base font-semibold uppercase tracking-wide">Visit our eBay store</span>
+        </a>
         <GoogleRating tone="light" size="lg" />
       </div>
     </div>
