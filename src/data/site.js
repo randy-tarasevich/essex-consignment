@@ -19,13 +19,25 @@ export const site = {
   // Structured hours for Google (schema.org). Fill once Al confirms, e.g.
   // { days: ['Friday', 'Saturday'], opens: '11:00', closes: '16:00' }
   openingHours: [],
-  // Official profiles for Google (schema.org sameAs): Facebook, eBay store, Google Business Profile, Yelp
-  sameAs: [], // TODO: get Facebook + eBay store URLs from Al
+  // Official profiles for Google (schema.org sameAs): Facebook, Instagram, eBay store, Google Business Profile
+  sameAs: [
+    'https://www.facebook.com/essexconsignments/',
+    'https://www.instagram.com/_essexconsignment/',
+    'https://www.ebay.com/str/aaestatesales',
+    // Google Business Profile (Google Maps share link)
+    'https://maps.app.goo.gl/guT2FEqCHgnAHuct5',
+  ],
+  // Social links shown in the footer and on the Contact page.
+  social: [
+    { label: 'Facebook', href: 'https://www.facebook.com/essexconsignments/', icon: 'facebook' },
+    { label: 'Instagram', href: 'https://www.instagram.com/_essexconsignment/', icon: 'instagram' },
+    { label: 'eBay', href: 'https://www.ebay.com/str/aaestatesales', text: 'eBay Store' },
+  ],
   // Google rating shown on the homepage. Update by hand when it changes (checked Nov 6, 2026).
   google: {
     rating: '5.0',
     reviewCount: 7,
-    reviewsUrl: '', // TODO: "View all Google reviews" link from the Business Profile
+    reviewsUrl: 'https://maps.app.goo.gl/guT2FEqCHgnAHuct5', // Google Maps listing (reviews tab is one tap away)
   },
   // Stand-in from the JPG Miles texted (Nov 6). Replace src/assets/logo.png + public/logo.png with the designer's file.
   logo: '/logo.png',

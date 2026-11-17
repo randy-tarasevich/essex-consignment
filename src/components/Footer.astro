@@ -1,5 +1,6 @@
 ---
 import { site, nav } from '../data/site.js';
+import SocialLinks from './SocialLinks.astro';
 const year = new Date().getFullYear();
 ---
 <footer class="bg-burgundy-900 text-burgundy-100">
@@ -7,6 +8,7 @@ const year = new Date().getFullYear();
     <div>
       <p class="font-display text-xl text-white" translate="no">{site.name}</p>
       <p class="mt-2 text-sm">{site.tagline}</p>
+      <SocialLinks class="mt-4" linkClass="hover:text-white" />
     </div>
     <address class="not-italic text-sm space-y-1">
       <p>{site.address.street}</p>
