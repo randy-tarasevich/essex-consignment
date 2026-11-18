@@ -17,7 +17,20 @@ import SocialLinks from '../components/SocialLinks.astro';
         <p class="font-semibold">Follow us for new arrivals</p>
         <SocialLinks class="mt-2" linkClass="text-burgundy-700 hover:text-burgundy-900" />
       </div>
-      <!-- TODO: map embed (lazy-loaded) -->
+      <div class="pt-4">
+        <div class="aspect-[4/3] w-full overflow-hidden rounded-lg border border-gray-300 bg-gray-100">
+          <iframe
+            src={site.map.embedUrl}
+            title={`Map of ${site.name}, ${site.address.street}, ${site.address.city}, ${site.address.region}`}
+            class="h-full w-full"
+            style="border:0"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <p class="mt-2"><a href={site.map.placeUrl} target="_blank" rel="noopener" class="text-burgundy-700 hover:underline">Get directions on Google Maps</a></p>
+      </div>
     </div>
     <div>
       <h2 class="text-2xl font-bold">Send us a message</h2>
