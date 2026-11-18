@@ -139,6 +139,7 @@ async function handleInquiry(request, env, ctx) {
 
   try {
     const result = await saveToShopify(env, data);
+    console.log(`[inquiry] ${data.type}: ${result.action} Shopify customer ${result.id} (${data.email})`);
     return respond(true, 200, 'Thanks! We received your message and will be in touch soon.', data.type, {
       saved: true,
       action: result.action,
@@ -258,7 +259,7 @@ export function noteEntry(d, date = new Date()) {
   return lines.join('\n');
 }
 
-const FIND = `query Find($q: String!) { customers(first: 1, query: $q) { nodes { id note tags } } }`;
+const FIND = `query Find($q: String!) { customers(first: 1, query: $q) { nodes { id firstName lastName note tags } } }`;
 const CREATE = `mutation Create($input: CustomerInput!) {
   customerCreate(input: $input) { customer { id } userErrors { field message } } }`;
 const UPDATE = `mutation Update($input: CustomerInput!) {
@@ -292,7 +293,12 @@ export async function saveToShopify(env, d) {
   // Existing customer: add the tag, append the message to the note, update consent only if they opted in.
   userErrors((await admin(env, TAG, { id: existing.id, tags: [d.tag] })).tagsAdd);
   const note = existing.note ? `${existing.note}\n\n${entry}` : entry;
-  userErrors((await admin(env, UPDATE, { input: { id: existing.id, note: note.slice(-5000) } })).customerUpdate);
+  const input = { id: existing.id, note: note.slice(-5000) };
+  // Fill in a name Shopify doesn't have yet (e.g. a customer first created from an order with
+  // only an email), but never overwrite a name that's already there.
+  if (!existing.firstName && d.firstName) input.firstName = d.firstName;
+  if (!existing.lastName && d.lastName) input.lastName = d.lastName;
+  userErrors((await admin(env, UPDATE, { input })).customerUpdate);
   if (d.acceptsMarketing) {
     const out = await admin(env, CONSENT, {
       input: {
