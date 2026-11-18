@@ -210,16 +210,21 @@ async function adminToken(env) {
   if (env.SHOPIFY_ADMIN_TOKEN) return env.SHOPIFY_ADMIN_TOKEN;
   if (!env.SHOPIFY_CLIENT_ID || !env.SHOPIFY_CLIENT_SECRET) throw new Error('Shopify credentials not configured');
   if (cachedToken && cachedToken.expires > Date.now() + 60_000) return cachedToken.value;
+  // Shopify documents this grant as a form-encoded POST.
   const res = await fetch(`https://${env.SHOPIFY_STORE_DOMAIN}/admin/oauth/access_token`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
+    body: new URLSearchParams({
       grant_type: 'client_credentials',
-      client_id: env.SHOPIFY_CLIENT_ID,
-      client_secret: env.SHOPIFY_CLIENT_SECRET,
+      client_id: env.SHOPIFY_CLIENT_ID.trim(),
+      client_secret: env.SHOPIFY_CLIENT_SECRET.trim(),
     }),
   });
-  if (!res.ok) throw new Error(`Shopify token request failed (${res.status})`);
+  if (!res.ok) {
+    // Include Shopify's reason (e.g. invalid_client, shop_not_permitted) so the log says what's wrong.
+    const detail = (await res.text().catch(() => '')).slice(0, 300);
+    throw new Error(`Shopify token request failed (${res.status}) for ${env.SHOPIFY_STORE_DOMAIN}: ${detail}`);
+  }
   const out = await res.json();
   cachedToken = { value: out.access_token, expires: Date.now() + (out.expires_in || 3600) * 1000 };
   return cachedToken.value;
