@@ -2,6 +2,8 @@
 export const site = {
   name: 'Essex Consignment',
   tagline: 'Whatever it is, we can sell it for more!',
+  // Shown on the Sales Results page, as on the original site. Confirm with Al before launch.
+  monthlyViews: '16,000',
   description:
     'Essex Consignment buys and sells estate furniture, antiques, art, jewelry, and collectibles in Essex, CT, for 27 years, with a 5-star eBay store.',
   url: 'https://essexconsignment.com',

@@ -1,48 +1,77 @@
 ---
-// Auction estimate vs. sold price. Table on desktop, cards on phones.
-import { usd, pctOver } from '../data/consign.js';
+// Sales results laid out like the original site's "Actual items sold" chart:
+// category (shown once per group) · item · auction estimate · sold by Essex, with dot leaders.
+// Table on tablet and up; grouped list on phones.
+import { usd } from '../data/consign.js';
 const { items, caption = 'Actual items sold: auction estimate compared with the price Essex Consignment got' } = Astro.props;
+
+// Group consecutive rows by category, keeping the data's order.
+const groups = [];
+for (const r of items) {
+  const last = groups[groups.length - 1];
+  if (last && last.category === r.category) last.rows.push(r);
+  else groups.push({ category: r.category, rows: [r] });
+}
 ---
 <div>
-  <!-- Phones: cards -->
-  <ul class="grid gap-4 sm:grid-cols-2 md:hidden">
-    {items.map((r) => (
-      <li class="bg-white p-4 ring-1 ring-burgundy-100 frame">
-        <p class="text-xs font-serif lining-nums font-semibold uppercase tracking-wide text-burgundy-600">{r.category}</p>
-        <h3 class="mt-1 text-lg">{r.item}</h3>
-        <dl class="mt-3 grid grid-cols-2 gap-2 text-sm">
-          <div><dt class="text-ink/70">Auction estimate</dt><dd class="font-serif lining-nums">{usd(r.estimate)}</dd></div>
-          <div><dt class="text-ink/70">Sold by Essex</dt><dd class="font-serif lining-nums text-lg font-bold text-burgundy-700">{usd(r.sold)}</dd></div>
-        </dl>
-        <p class="mt-2 text-sm text-navy-600"><span class="gothic-bold text-base">{pctOver(r)}%</span> over estimate</p>
-      </li>
+  <!-- Phones: grouped list -->
+  <div class="bg-white p-5 ring-1 ring-burgundy-100 frame md:hidden">
+    <div class="flex items-end justify-between border-b-2 border-ink pb-2 text-xs font-bold uppercase tracking-wide">
+      <span>Actual items sold</span>
+      <span class="text-right">Estimate / <span class="text-burgundy-700">Sold</span></span>
+    </div>
+    {groups.map((g) => (
+      <section class="border-b border-burgundy-100 py-3 last:border-0">
+        <h3 class="gothic-bold text-base text-ink">{g.category}</h3>
+        <ul class="mt-1 space-y-2">
+          {g.rows.map((r) => (
+            <li class="text-sm">
+              <span class="block">{r.item}</span>
+              <span class="mt-0.5 flex justify-between lining-nums tabular-nums">
+                <span class="text-ink/70">Est. {usd(r.estimate)}</span>
+                <span class="font-bold text-burgundy-700">Sold {usd(r.sold)}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
     ))}
-  </ul>
+  </div>
 
-  <!-- Tablet and up: table -->
+  <!-- Tablet and up: chart-style table -->
   <div class="hidden bg-white px-8 py-6 ring-1 ring-burgundy-100 frame md:block">
-  <table class="w-full text-left">
-    <caption class="sr-only">{caption}</caption>
-    <thead>
-      <tr class="border-b-2 border-burgundy-700 font-serif lining-nums text-sm uppercase tracking-wide">
-        <th scope="col" class="py-3 pr-4">Category</th>
-        <th scope="col" class="py-3 pr-4">Item</th>
-        <th scope="col" class="py-3 pr-4 text-right">Auction estimate</th>
-        <th scope="col" class="py-3 pr-4 text-right">Sold by Essex</th>
-        <th scope="col" class="py-3 text-right">Over estimate</th>
-      </tr>
-    </thead>
-    <tbody>
-      {items.map((r) => (
-        <tr class="border-b border-burgundy-100">
-          <td class="py-3 pr-4 font-semibold text-burgundy-800">{r.category}</td>
-          <th scope="row" class="py-3 pr-4 font-normal">{r.item}</th>
-          <td class="py-3 pr-4 text-right font-serif lining-nums tabular-nums">{usd(r.estimate)}</td>
-          <td class="py-3 pr-4 text-right font-serif lining-nums font-bold tabular-nums text-burgundy-700">{usd(r.sold)}</td>
-          <td class="py-3 text-right gothic-bold lining-nums tabular-nums text-navy-600">+{pctOver(r)}%</td>
+    <table class="w-full text-left">
+      <caption class="sr-only">{caption}</caption>
+      <thead>
+        <tr class="border-b-2 border-ink align-bottom leading-tight gothic-bold text-xl">
+          <th scope="col" colspan="2" class="pb-2 text-center">Actual<br />items sold</th>
+          <th scope="col" class="pb-2 text-center">Auction<br />estimate</th>
+          <th scope="col" class="pb-2 text-center">Sold by Essex<br />Consignment</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
+      </thead>
+      <tbody class="lining-nums tabular-nums">
+        {groups.map((g) => g.rows.map((r, i) => (
+          <tr class={i === 0 ? 'first-row' : ''}>
+            {i === 0 && (
+              <th scope="rowgroup" rowspan={g.rows.length} class="w-48 pt-2 pr-2 align-top gothic-bold text-lg text-ink">
+                <span class="leader">{g.category}</span>
+              </th>
+            )}
+            <th scope="row" class="py-1 font-normal">
+              <span class="leader"><span aria-hidden="true" class="mr-1.5 text-xs">■</span>{r.item}</span>
+            </th>
+            <td class="w-36 py-1"><span class="leader">$<span class="font-bold">{r.estimate.toLocaleString('en-US')}</span></span></td>
+            <td class="w-44 py-1 pl-2 font-bold text-burgundy-700">{usd(r.sold)}</td>
+          </tr>
+        )))}
+      </tbody>
+    </table>
   </div>
 </div>
+
+<style>
+  /* Dot leaders, like the original printed chart. */
+  .leader { display: flex; align-items: baseline; gap: 0.25rem; }
+  .leader::after { content: ''; flex: 1; min-width: 1rem; border-bottom: 2px dotted currentColor; opacity: 0.45; transform: translateY(-0.2em); }
+  tr.first-row > * { padding-top: 0.5rem; }
+</style>
