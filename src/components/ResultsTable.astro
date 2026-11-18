@@ -1,7 +1,7 @@
 ---
 // Sales results laid out like the original site's "Actual items sold" chart:
 // category (shown once per group) · item · auction estimate · sold by Essex, with dot leaders.
-// Table on tablet and up; grouped list on phones.
+// Table on laptop and up (1280px+); grouped list on phones, tablets and small laptops.
 import { usd } from '../data/consign.js';
 const { items, caption = 'Actual items sold: auction estimate compared with the price Essex Consignment got' } = Astro.props;
 
@@ -15,21 +15,21 @@ for (const r of items) {
 ---
 <div>
   <!-- Phones: grouped list -->
-  <div class="bg-white p-5 ring-1 ring-burgundy-100 frame md:hidden">
-    <div class="flex items-end justify-between border-b-2 border-ink pb-2 text-xs font-bold uppercase tracking-wide">
+  <div class="xl:hidden">
+    <div class="flex items-end justify-between border-b-2 border-ink pb-2 text-base font-black leading-tight text-ink">
       <span>Actual items sold</span>
-      <span class="text-right">Estimate / <span class="text-burgundy-700">Sold</span></span>
+      <span class="text-right">Estimate / Sold</span>
     </div>
     {groups.map((g) => (
-      <section class="border-b border-burgundy-100 py-3 last:border-0">
-        <h3 class="gothic-bold text-base text-ink">{g.category}</h3>
-        <ul class="mt-1 space-y-2">
+      <section class="border-b border-ink/15 py-2 last:border-0">
+        <h3 class="text-lg font-black leading-tight text-ink">{g.category}</h3>
+        <ul class="mt-0.5 space-y-1">
           {g.rows.map((r) => (
             <li class="text-sm">
               <span class="block">{r.item}</span>
               <span class="mt-0.5 flex justify-between lining-nums tabular-nums">
                 <span class="text-ink/70">Est. {usd(r.estimate)}</span>
-                <span class="font-bold text-burgundy-700">Sold {usd(r.sold)}</span>
+                <span class="font-extrabold text-ink">Sold {usd(r.sold)}</span>
               </span>
             </li>
           ))}
@@ -39,29 +39,29 @@ for (const r of items) {
   </div>
 
   <!-- Tablet and up: chart-style table -->
-  <div class="hidden bg-white px-8 py-6 ring-1 ring-burgundy-100 frame md:block">
+  <div class="hidden xl:block">
     <table class="w-full text-left">
       <caption class="sr-only">{caption}</caption>
       <thead>
-        <tr class="border-b-2 border-ink align-bottom leading-tight gothic-bold text-xl">
-          <th scope="col" colspan="2" class="pb-2 text-center">Actual<br />items sold</th>
-          <th scope="col" class="pb-2 text-center">Auction<br />estimate</th>
-          <th scope="col" class="pb-2 text-center">Sold by Essex<br />Consignment</th>
+        <tr class="border-b-2 border-ink align-bottom text-[1.75rem] font-black leading-[0.95] tracking-tight text-ink">
+          <th scope="col" colspan="2" class="pb-2 pr-24 text-center font-black">Actual<br />items sold</th>
+          <th scope="col" class="whitespace-nowrap pb-2 text-center font-black">Auction<br />estimate</th>
+          <th scope="col" class="whitespace-nowrap pb-2 text-center font-black">Sold by Essex<br />Consignment</th>
         </tr>
       </thead>
-      <tbody class="lining-nums tabular-nums">
+      <tbody class="pt-2 text-[1.0625rem] leading-snug lining-nums tabular-nums">
         {groups.map((g) => g.rows.map((r, i) => (
-          <tr class={i === 0 ? 'first-row' : ''}>
+          <tr>
             {i === 0 && (
-              <th scope="rowgroup" rowspan={g.rows.length} class="w-48 pt-2 pr-2 align-top gothic-bold text-lg text-ink">
+              <th scope="rowgroup" rowspan={g.rows.length} class="w-52 pr-2 align-top text-xl font-black leading-snug tracking-tight text-ink">
                 <span class="leader">{g.category}</span>
               </th>
             )}
-            <th scope="row" class="py-1 font-normal">
+            <th scope="row" class="py-px font-normal">
               <span class="leader"><span aria-hidden="true" class="mr-1.5 text-xs">■</span>{r.item}</span>
             </th>
-            <td class="w-36 py-1"><span class="leader">$<span class="font-bold">{r.estimate.toLocaleString('en-US')}</span></span></td>
-            <td class="w-44 py-1 pl-2 font-bold text-burgundy-700">{usd(r.sold)}</td>
+            <td class="w-40 py-px"><span class="leader">$<span class="font-extrabold text-lg leading-none">{r.estimate.toLocaleString('en-US')}</span></span></td>
+            <td class="w-44 py-px pl-1">$<span class="font-extrabold text-lg leading-none">{r.sold.toLocaleString('en-US')}</span></td>
           </tr>
         )))}
       </tbody>
@@ -73,5 +73,4 @@ for (const r of items) {
   /* Dot leaders, like the original printed chart. */
   .leader { display: flex; align-items: baseline; gap: 0.25rem; }
   .leader::after { content: ''; flex: 1; min-width: 1rem; border-bottom: 2px dotted currentColor; opacity: 0.45; transform: translateY(-0.2em); }
-  tr.first-row > * { padding-top: 0.5rem; }
 </style>
