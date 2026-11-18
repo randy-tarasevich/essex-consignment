@@ -53,7 +53,6 @@ export const site = {
 // get some wrong ("Home" -> "Hogar" = house), so the nav is excluded from translation.
 export const nav = [
   { label: 'Home', es: 'Inicio', href: '/' },
-  { label: 'About', es: 'Nosotros', href: '/about/' },
   // Hidden from the nav until Al & Miles decide whether to keep the page (Nov 2026). The page itself still exists.
   // { label: 'Announcements', es: 'Anuncios', href: '/announcements/' },
   { label: 'Consign With Us', es: 'Consignar', href: '/consign/' },

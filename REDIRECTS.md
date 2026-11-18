@@ -12,7 +12,7 @@ Redirects live in `public/_redirects` (Cloudflare Workers static assets reads it
 | `/worldwide-consignments` | "From an ashtray to a Picasso", 5-star eBay seller | `/consign` | 301 |
 | `/contact-and-directions` | Phone, address, Google Maps directions | `/contact` | 301 |
 
-New pages with no old equivalent: `/about`, `/announcements`, `/thank-you`.
+New pages with no old equivalent: `/announcements`, `/thank-you`.
 
 ## Open decisions
 
