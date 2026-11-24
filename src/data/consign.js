@@ -24,6 +24,28 @@ export const categories = [
   { name: 'Automobiles', items: 'Classic, collector and exotic cars' },
 ];
 
+// Consign With Us page: Al's "Ebay Items Wanted" list, copied from the old site (Miles, Nov 24, 2026).
+// [bold lead, rest of the line, optional second line]. Two columns, in this order (first 9 left, next 9 right).
+export const wanted = [
+  ['Coins,', 'Currency, Metals'],
+  ['Comic Books,', 'Sports Cards'],
+  ['Civil War,', 'WWI and WWII Items'],
+  ['Sterling Silver', 'All Tableware'],
+  ['Rare Books', 'and Manuscripts'],
+  ['Presidential', 'and Political Memorabilia'],
+  ['Vintage Toys,', 'Trains, Matchbox, Dinky'],
+  ['Movie', 'Posters'],
+  ['Music Memorabilia,', 'Tickets, Programs'],
+  ['Watches,', 'All Jewelry and gemstones'],
+  ['Bags & Scarves,', 'Gucci, Hermes, Coach'],
+  ['Baseball', 'Memorabilia & Autographs'],
+  ['Old Stock', 'Certificates'],
+  ['Musical', 'Instruments'],
+  ['Vintage Pens,', 'Pocket Knives'],
+  ['Records,', 'LP’s, 33⅓, 45’s'],
+  ['Video Games,', 'Nintendo, Atari,', 'Game Boy, XBOX'],
+];
+
 // "Is this you?" from the ash tray ad.
 export const situations = [
   'Spring cleaning',
