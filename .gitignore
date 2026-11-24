@@ -21,3 +21,6 @@ npm-debug.log*
 # local Worker secrets
 .dev.vars
 .preview-results/
+
+# Files the Claude app drops into connected folders
+Claude outputs/
