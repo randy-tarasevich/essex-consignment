@@ -24,7 +24,11 @@ const pill = 'gallery-filter rounded-btn border border-burgundy-100 bg-white px-
   <div class="flex flex-wrap items-end justify-between gap-4">
     <div>
       {eyebrow && <p class="text-sm font-bold uppercase tracking-[0.2em] text-burgundy-700">{eyebrow}</p>}
-      <Heading id="featured-heading" class:list={['text-3xl', headingLevel === 'h1' ? 'font-bold leading-none sm:text-5xl' : 'font-bold']}>Featured Items</Heading>
+      <div class="flex flex-wrap items-center gap-4 sm:gap-6">
+        <Heading id="featured-heading" class:list={['text-3xl', headingLevel === 'h1' ? 'font-bold leading-none sm:text-5xl' : 'font-bold']}>Featured Items</Heading>
+        <!-- Client request (Miles, Nov 24): big "Sell With Us" button beside the heading -->
+        <a href="/contact/" class="inline-flex items-center gap-2 rounded-btn bg-burgundy-700 px-6 py-3 text-base font-bold uppercase tracking-[0.12em] text-white shadow-sm hover:bg-burgundy-800 transition-colors sm:px-8 sm:py-4 sm:text-lg">Sell With Us <span aria-hidden="true">→</span></a>
+      </div>
     </div>
     <div class="flex flex-col items-end gap-2">
       {site.shopUrl && <a href={site.shopUrl} class="text-xs font-semibold uppercase tracking-[0.2em] text-burgundy-700 hover:underline">Shop all items →</a>}
