@@ -68,7 +68,7 @@ export const nav = [
 // Gallery filters (client request, Nov 16).
 // A piece lands in a category if it's in one of the listed Shopify collections (by handle),
 // or its Shopify product type / a tag matches one of the listed names (case-insensitive).
-// Easiest for Miles: create these three collections in Shopify and add pieces to them.
+// Easiest for Miles: create these collections in Shopify (handles: art, home-living, glassware-dishware, collectables) and add pieces to them.
 export const shopCategories = [
   {
     slug: 'art',
@@ -85,11 +85,19 @@ export const shopCategories = [
     names: ['home & living', 'home and living', 'home', 'furniture', 'lighting', 'decor', 'home decor'],
   },
   {
-    slug: 'glassware-dishware-collectables',
-    label: 'Glassware/Dishware & Collectables',
-    es: 'Cristalería, Vajilla y Coleccionables',
-    collections: ['glassware-dishware-collectables', 'glassware-dishware-collectibles', 'glassware', 'dishware', 'collectables', 'collectibles'],
-    names: ['glassware', 'dishware', 'china', 'crystal', 'collectables', 'collectibles', 'collectable', 'collectible'],
+    slug: 'glassware-dishware',
+    label: 'Glassware/Dishware',
+    es: 'Cristalería y Vajilla',
+    collections: ['glassware-dishware', 'glassware-dishware-collectables', 'glassware-dishware-collectibles', 'glassware', 'dishware'],
+    names: ['glassware', 'dishware', 'glassware/dishware', 'china', 'crystal'],
+  },
+  // Split out of Glassware/Dishware (Miles, Nov 24, 2026).
+  {
+    slug: 'collectables',
+    label: 'Collectables',
+    es: 'Coleccionables',
+    collections: ['collectables', 'collectibles'],
+    names: ['collectables', 'collectibles', 'collectable', 'collectible'],
   },
 ];
 
