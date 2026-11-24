@@ -45,23 +45,23 @@ for (const r of items) {
       <thead>
         <tr class="border-b-2 border-ink align-bottom text-[1.75rem] font-black leading-[0.95] tracking-tight text-ink">
           <th scope="col" colspan="2" class="pb-2 pr-24 text-center font-black">Actual<br />items sold</th>
-          <th scope="col" class="whitespace-nowrap pb-2 text-center font-black">Auction<br />estimate</th>
-          <th scope="col" class="whitespace-nowrap pb-2 text-center font-black">Sold by Essex<br />Consignment</th>
+          <th scope="col" class="w-44 whitespace-nowrap pb-2 text-center font-black">Auction<br />estimate</th>
+          <th scope="col" class="w-44 whitespace-nowrap pb-2 text-center font-black">Sold by Essex<br />Consignment</th>
         </tr>
       </thead>
       <tbody class="pt-2 text-[1.0625rem] leading-snug lining-nums tabular-nums">
         {groups.map((g) => g.rows.map((r, i) => (
           <tr>
             {i === 0 && (
-              <th scope="rowgroup" rowspan={g.rows.length} class="w-52 pr-2 align-top text-xl font-black leading-snug tracking-tight text-ink">
+              <th scope="rowgroup" rowspan={g.rows.length} class="w-48 pr-2 align-top text-xl font-black leading-snug tracking-tight text-ink">
                 <span class="leader">{g.category}</span>
               </th>
             )}
             <th scope="row" class="py-px font-normal">
               <span class="leader"><span aria-hidden="true" class="mr-1.5 text-xs">■</span>{r.item}</span>
             </th>
-            <td class="w-40 py-px"><span class="leader">$<span class="font-extrabold text-lg leading-none">{r.estimate.toLocaleString('en-US')}</span></span></td>
-            <td class="w-44 py-px pl-1">$<span class="font-extrabold text-lg leading-none">{r.sold.toLocaleString('en-US')}</span></td>
+            <td class="py-px"><span class="price"><span class="dots"></span><span class="amount">$ <span class="font-extrabold text-lg leading-none">{r.estimate.toLocaleString('en-US')}</span></span><span class="dots"></span></span></td>
+            <td class="py-px"><span class="price"><span class="dots"></span><span class="amount last">$ <span class="font-extrabold text-lg leading-none">{r.sold.toLocaleString('en-US')}</span></span><span class="flex-1"></span></span></td>
           </tr>
         )))}
       </tbody>
@@ -72,5 +72,10 @@ for (const r of items) {
 <style>
   /* Dot leaders, like the original printed chart. */
   .leader { display: flex; align-items: baseline; gap: 0.25rem; }
+  /* Price cells: amount centered under its column heading, dots on both sides so the leaders run unbroken. */
+  .price { display: flex; align-items: baseline; gap: 0.25rem; }
+  .price .amount { flex: none; width: 6.5rem; display: flex; align-items: baseline; gap: 0.25rem; white-space: nowrap; }
+  .price .amount:not(.last)::after { content: ''; flex: 1; border-bottom: 2px dotted currentColor; opacity: 0.45; transform: translateY(-0.2em); }
+  .price .dots { flex: 1; border-bottom: 2px dotted currentColor; opacity: 0.45; transform: translateY(-0.2em); }
   .leader::after { content: ''; flex: 1; min-width: 1rem; border-bottom: 2px dotted currentColor; opacity: 0.45; transform: translateY(-0.2em); }
 </style>
