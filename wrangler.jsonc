@@ -19,6 +19,9 @@
   "vars": {
     "SHOPIFY_STORE_DOMAIN": "essexconsignment.myshopify.com"
   },
+  // Photos attached to the Contact form (served by the Worker at /api/photo/<key>).
+  // Create once with: npx wrangler r2 bucket create essex-consignment-photos
+  "r2_buckets": [{ "binding": "PHOTOS", "bucket_name": "essex-consignment-photos" }],
   // Debounces Shopify webhooks into one site rebuild (see RebuildDebouncer in worker/index.js)
   "durable_objects": {
     "bindings": [{ "name": "REBUILD_DEBOUNCER", "class_name": "RebuildDebouncer" }]

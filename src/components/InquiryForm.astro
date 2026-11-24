@@ -5,6 +5,8 @@
 // Works without JavaScript (redirects to /thank-you/); with JavaScript it shows the result inline.
 const { type = 'contact' } = Astro.props; // 'contact' | 'consignor'
 const isConsignor = type === 'consignor';
+// Photo upload (Miles, Nov 24, 2026): Contact form only for now. Photos go to R2 via the Worker.
+const { photos = !isConsignor } = Astro.props;
 // Turnstile site key is public. Real key covers essexconsignment.com + the workers.dev staging URL;
 // local dev uses Cloudflare's always-pass test key so the widget works on localhost.
 const TURNSTILE_SITE_KEY = '0x4AAAAAAF05rsXl12KtrHVR';
@@ -15,7 +17,7 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || (import.meta.env.DE
 const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || '154ab7cf-7f4c-4172-b72c-3974e1ad6648';
 const field = 'mt-1 w-full border border-burgundy-100 bg-white px-3 py-2 font-normal';
 ---
-<form class="inquiry-form space-y-4 max-w-xl" method="post" action="/api/inquiry" data-notify-key={web3formsKey} novalidate>
+<form class="inquiry-form space-y-4 max-w-xl" method="post" action="/api/inquiry" enctype="multipart/form-data" data-notify-key={web3formsKey} novalidate>
   <input type="hidden" name="type" value={type} />
 
   <!-- Honeypot: hidden from people, filled in by bots -->
@@ -40,6 +42,13 @@ const field = 'mt-1 w-full border border-burgundy-100 bg-white px-3 py-2 font-no
   <label class="block text-sm font-semibold">{isConsignor ? 'What would you like to consign?' : 'Message'}
     <textarea name="message" rows="5" required maxlength="4000" class={field}></textarea>
   </label>
+  {photos && (
+    <label class="block text-sm font-semibold">Photos of your item(s) <span class="font-normal text-burgundy-600">(optional, up to 5)</span>
+      <input type="file" name="photos" accept="image/*" multiple
+        class="mt-1 block w-full border border-burgundy-100 bg-white px-3 py-2 font-normal file:mr-3 file:rounded-btn file:border-0 file:bg-burgundy-700 file:px-4 file:py-2 file:font-semibold file:text-white hover:file:bg-burgundy-800" />
+      <span class="photo-status mt-1 block text-xs font-normal text-burgundy-600" aria-live="polite"></span>
+    </label>
+  )}
   <label class="flex items-start gap-2 text-sm">
     <input type="checkbox" name="acceptsMarketing" class="mt-1" />
     <span>Email me about new arrivals and shop news.</span>
@@ -57,8 +66,49 @@ const field = 'mt-1 w-full border border-burgundy-100 bg-white px-3 py-2 font-no
 {siteKey && <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>}
 
 <script>
+  const MAX_PHOTOS = 5;
+  const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
+
+  // Phone photos are often 3-12 MB. Shrink large JPG/PNG/WEBP photos to 2000px JPEGs before
+  // sending; anything the browser can't decode (e.g. HEIC on some browsers) is sent as-is.
+  async function shrink(file) {
+    if (file.size < 1.5 * 1024 * 1024 || !/^image\/(jpeg|png|webp)$/.test(file.type)) return file;
+    try {
+      const bitmap = await createImageBitmap(file, { imageOrientation: 'from-image' });
+      const scale = Math.min(1, 2000 / Math.max(bitmap.width, bitmap.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(bitmap.width * scale);
+      canvas.height = Math.round(bitmap.height * scale);
+      canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      bitmap.close?.();
+      const blob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.85));
+      if (!blob || blob.size >= file.size) return file;
+      return new File([blob], file.name.replace(/\.\w+$/, '') + '.jpg', { type: 'image/jpeg' });
+    } catch {
+      return file;
+    }
+  }
+
+  // Checks the chosen photos; returns an error message or ''.
+  function photoProblem(input) {
+    const files = Array.from(input?.files || []);
+    if (files.length > MAX_PHOTOS) return `Please choose no more than ${MAX_PHOTOS} photos.`;
+    if (files.some((f) => !f.type.startsWith('image/') && !/\.(heic|heif)$/i.test(f.name))) return 'Please choose image files only.';
+    return '';
+  }
+
+  for (const input of document.querySelectorAll('form.inquiry-form input[name="photos"]')) {
+    input.addEventListener('change', () => {
+      const note = input.parentElement.querySelector('.photo-status');
+      const problem = photoProblem(input);
+      const n = input.files.length;
+      note.className = `photo-status mt-1 block text-xs ${problem ? 'font-semibold text-red-700' : 'font-normal text-burgundy-600'}`;
+      note.textContent = problem || (n ? `${n} photo${n === 1 ? '' : 's'} selected` : '');
+    });
+  }
+
   // Sends the email notification from the browser (Web3Forms free plan only accepts browser submissions).
-  async function notify(form, data, saved) {
+  async function notify(form, data, saved, photos = [], photoError = false) {
     const key = form.dataset.notifyKey;
     if (!key) return false;
     const consignor = data.get('type') === 'consignor';
@@ -77,6 +127,11 @@ const field = 'mt-1 w-full border border-burgundy-100 bg-white px-3 py-2 font-no
           phone: data.get('phone') || '(not given)',
           message: data.get('message'),
           email_updates: data.get('acceptsMarketing') ? 'Yes' : 'No',
+          ...(form.querySelector('input[name="photos"]') && {
+            photos: photoError
+              ? 'The customer attached photos, but they failed to upload. Ask them to email the photos.'
+              : photos.length ? photos.join('\n') : 'None',
+          }),
           shopify: saved
             ? `Saved to Shopify (tagged "${consignor ? 'consignor' : 'website-contact'}").`
             : 'NOT saved to Shopify. Please add this person by hand.',
@@ -102,20 +157,43 @@ const field = 'mt-1 w-full border border-burgundy-100 bg-white px-3 py-2 font-no
         status.className = `form-status text-sm font-semibold ${ok ? 'text-green-800' : 'text-red-700'}`;
         status.textContent = text;
       };
+      const photoInput = form.querySelector('input[name="photos"]');
+      const problem = photoProblem(photoInput);
+      if (problem) {
+        show(false, problem);
+        return;
+      }
       button.disabled = true;
       status.className = 'form-status text-sm';
       status.textContent = 'Sending…';
       const data = new FormData(form);
       try {
+        if (photoInput) {
+          data.delete('photos');
+          const chosen = Array.from(photoInput.files || []);
+          if (chosen.length) status.textContent = 'Preparing photos…';
+          for (const file of chosen) {
+            const small = await shrink(file);
+            if (small.size > MAX_PHOTO_BYTES) {
+              show(false, `"${file.name}" is too large. Each photo must be under 10 MB.`);
+              return;
+            }
+            data.append('photos', small, small.name);
+          }
+          if (chosen.length) status.textContent = 'Sending…';
+        }
         const res = await fetch(form.action, { method: 'POST', body: data, headers: { Accept: 'application/json' } });
         const out = await res.json().catch(() => ({}));
         if (res.ok && out.ok) {
-          await notify(form, data, true);
+          await notify(form, data, true, out.photos, out.photoError);
           form.reset();
-          show(true, out.message || 'Thanks! We will be in touch soon.');
+          form.querySelector('.photo-status')?.replaceChildren();
+          show(true, out.photoError
+            ? 'Thanks! We got your message, but your photos did not upload. Please email them to us.'
+            : out.message || 'Thanks! We will be in touch soon.');
         } else if (out.saved === false) {
           // Shopify was unavailable: the email still delivers the inquiry.
-          const emailed = await notify(form, data, false);
+          const emailed = await notify(form, data, false, out.photos, out.photoError);
           if (emailed) {
             form.reset();
             show(true, 'Thanks! We received your message and will be in touch soon.');

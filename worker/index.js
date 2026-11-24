@@ -1,12 +1,13 @@
 // Essex Consignment: Cloudflare Worker.
 //
-// Serves the Astro site from ./dist and handles two API routes:
+// Serves the Astro site from ./dist and handles these API routes:
 //   POST /api/inquiry          (Contact and Consign With Us forms)
+//   GET  /api/photo/<key>      (photos visitors attached to the Contact form, stored in R2)
 //   POST /api/shopify-webhook  (Shopify product/collection webhooks -> debounced site rebuild)
 //
 // Flow: spam check (honeypot + Cloudflare Turnstile) → find or create the
 // Shopify customer by email → add tag "website-contact" or "consignor" →
-// save the message in the customer note → set email-marketing consent if
+// save the message (plus links to any attached photos) in the customer note → set email-marketing consent if
 // the box was ticked. The email notification is sent from the visitor's
 // browser (Web3Forms free plan only accepts browser submissions), using the
 // `saved` flag this endpoint returns.
@@ -18,6 +19,8 @@
 //   TURNSTILE_SECRET_KEY       Cloudflare Turnstile secret
 //   SHOPIFY_WEBHOOK_SECRET     Shopify admin → Settings → Notifications → Webhooks → signing secret
 //   DEPLOY_HOOK_URL            Cloudflare Workers Builds deploy hook (Settings → Builds → Deploy Hooks)
+// Bindings (wrangler.jsonc):
+//   PHOTOS                     R2 bucket for Contact-form photos (client request, Nov 24, 2026)
 // Optional:
 //   SHOPIFY_API_VERSION        default 2026-10
 
@@ -32,6 +35,10 @@ export default {
     if (url.pathname === '/api/inquiry') {
       if (request.method !== 'POST') return json({ ok: false, error: 'Method not allowed' }, 405);
       return handleInquiry(request, env, ctx);
+    }
+    if (url.pathname.startsWith('/api/photo/')) {
+      if (request.method !== 'GET' && request.method !== 'HEAD') return json({ ok: false, error: 'Method not allowed' }, 405);
+      return servePhoto(url.pathname.slice('/api/photo/'.length), env);
     }
     if (url.pathname === '/api/shopify-webhook') {
       if (request.method !== 'POST') return json({ ok: false, error: 'Method not allowed' }, 405);
@@ -132,18 +139,27 @@ async function handleInquiry(request, env, ctx) {
   const data = clean(form);
   const problem = validate(data);
   if (problem) return respond(false, 400, problem);
+  const { files: photos, problem: photoProblem } = await readPhotos(form);
+  if (photoProblem) return respond(false, 400, photoProblem);
 
   const ip = request.headers.get('cf-connecting-ip') || '';
   const human = await verifyTurnstile(env, str(form.get('cf-turnstile-response')), ip);
   if (!human) return respond(false, 403, 'Spam check failed. Please try again.');
 
+  // Photos are stored before the Shopify save, so their links reach the email even if Shopify is down.
+  const stored = await storePhotos(env, photos, origin);
+  data.photos = stored.urls;
+  data.photoError = stored.error;
+
   try {
     const result = await saveToShopify(env, data);
-    console.log(`[inquiry] ${data.type}: ${result.action} Shopify customer ${result.id} (${data.email})`);
+    console.log(`[inquiry] ${data.type}: ${result.action} Shopify customer ${result.id} (${data.email}), ${stored.urls.length} photo(s)`);
     return respond(true, 200, 'Thanks! We received your message and will be in touch soon.', data.type, {
       saved: true,
       action: result.action,
       tag: data.tag,
+      photos: stored.urls,
+      photoError: stored.error,
     });
   } catch (err) {
     console.error('[inquiry] Shopify error:', err.message);
@@ -151,6 +167,8 @@ async function handleInquiry(request, env, ctx) {
     return respond(false, 502, 'Sorry, something went wrong sending your message. Please call us at (860) 767-9741.', data.type, {
       saved: false,
       tag: data.tag,
+      photos: stored.urls,
+      photoError: stored.error,
     });
   }
 }
@@ -178,6 +196,86 @@ export function validate(d) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) return 'Please enter a valid email address.';
   if (!d.message) return 'Please include a message.';
   return null;
+}
+
+// ---------- photos (Contact form, client request Nov 24, 2026) ----------
+//
+// Visitors can attach up to 5 photos of items. The browser shrinks big phone photos before
+// sending. Each photo is saved to the private R2 bucket under a random key; the email and the
+// Shopify customer note get a link (/api/photo/<key>) that the Worker serves from R2.
+// Links are unguessable but not password-protected: anyone with a link can view that photo.
+
+export const PHOTO_LIMITS = { count: 5, bytes: 10 * 1024 * 1024 };
+const PHOTO_EXT = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'image/heic': 'heic', 'image/heif': 'heif' };
+const EXT_TYPE = Object.fromEntries(Object.entries(PHOTO_EXT).map(([t, e]) => [e, t]));
+const PHOTO_KEY = /^\d{4}-\d{2}\/[0-9a-f-]{36}\.(jpg|png|webp|gif|heic|heif)$/;
+
+// Image type from the file's first bytes, so a renamed non-image file is refused.
+export function sniffImageType(bytes) {
+  const b = bytes;
+  const ascii = (from, to) => String.fromCharCode(...b.slice(from, to));
+  if (b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return 'image/jpeg';
+  if (b[0] === 0x89 && ascii(1, 4) === 'PNG') return 'image/png';
+  if (ascii(0, 4) === 'GIF8') return 'image/gif';
+  if (ascii(0, 4) === 'RIFF' && ascii(8, 12) === 'WEBP') return 'image/webp';
+  if (ascii(4, 8) === 'ftyp') {
+    const brand = ascii(8, 12);
+    if (['heic', 'heix', 'heim', 'heis', 'hevc', 'hevx'].includes(brand)) return 'image/heic';
+    if (['mif1', 'msf1'].includes(brand)) return 'image/heif';
+  }
+  return null;
+}
+
+export async function readPhotos(form) {
+  // An empty file input still sends one nameless, zero-byte entry; skip those.
+  const entries = form.getAll('photos').filter((f) => f && typeof f === 'object' && f.size > 0);
+  if (entries.length > PHOTO_LIMITS.count) return { files: [], problem: `Please attach no more than ${PHOTO_LIMITS.count} photos.` };
+  const files = [];
+  for (const f of entries) {
+    if (f.size > PHOTO_LIMITS.bytes) return { files: [], problem: `Each photo must be under ${PHOTO_LIMITS.bytes / 1024 / 1024} MB.` };
+    const bytes = new Uint8Array(await f.arrayBuffer());
+    const type = sniffImageType(bytes.slice(0, 16));
+    if (!type) return { files: [], problem: 'Photos must be JPG, PNG, WEBP, GIF, or HEIC images.' };
+    files.push({ bytes, type });
+  }
+  return { files, problem: null };
+}
+
+async function storePhotos(env, files, origin) {
+  if (!files.length) return { urls: [], error: false };
+  if (!env.PHOTOS) {
+    console.error('[inquiry] PHOTOS bucket not bound; dropping', files.length, 'photo(s)');
+    return { urls: [], error: true };
+  }
+  const month = new Date().toISOString().slice(0, 7);
+  try {
+    const urls = await Promise.all(
+      files.map(async ({ bytes, type }) => {
+        const key = `${month}/${crypto.randomUUID()}.${PHOTO_EXT[type]}`;
+        await env.PHOTOS.put(key, bytes, { httpMetadata: { contentType: type } });
+        return `${origin}/api/photo/${key}`;
+      }),
+    );
+    return { urls, error: false };
+  } catch (err) {
+    console.error('[inquiry] R2 photo upload failed:', err.message);
+    return { urls: [], error: true };
+  }
+}
+
+async function servePhoto(key, env) {
+  if (!PHOTO_KEY.test(key) || !env.PHOTOS) return new Response('Not found', { status: 404 });
+  const obj = await env.PHOTOS.get(key);
+  if (!obj) return new Response('Not found', { status: 404 });
+  return new Response(obj.body, {
+    headers: {
+      'Content-Type': EXT_TYPE[key.split('.').pop()],
+      'Content-Disposition': 'inline',
+      'Cache-Control': 'private, max-age=86400',
+      'X-Content-Type-Options': 'nosniff',
+      'X-Robots-Tag': 'noindex',
+    },
+  });
 }
 
 // ---------- Turnstile ----------
@@ -256,6 +354,8 @@ export function noteEntry(d, date = new Date()) {
   const lines = [`[${when}] ${label} (website form)`];
   if (d.phone) lines.push(`Phone: ${d.phone}`);
   lines.push(d.message);
+  if (d.photos?.length) lines.push(`Photos:\n${d.photos.join('\n')}`);
+  if (d.photoError) lines.push('(Photos were attached but failed to upload. Ask the customer to email them.)');
   return lines.join('\n');
 }
 
