@@ -93,10 +93,11 @@ export const shopCategories = [
   },
 ];
 
-// Price filter tiers. TODO: confirm cut-offs with Miles.
-// Low: under $100 · Medium: $100–$499 · High: $500+ ("Inquire" / call-for-price pieces count as High).
+// Price filter tiers (Miles, Nov 24, 2026). Each tier runs up to, not including, its max:
+// a $500 piece lands in "$500–$2,499", a $2,500 piece in "$2,500+". "Inquire" / call-for-price pieces count as $2,500+.
 export const priceTiers = [
-  { slug: 'low', label: 'Low', hint: 'Under $100', max: 100 },
-  { slug: 'medium', label: 'Medium', hint: '$100–$499', max: 500 },
-  { slug: 'high', label: 'High', hint: '$500 & up', max: Infinity },
+  { slug: 'under-100', label: 'Under $100', hint: 'Under $100', max: 100 },
+  { slug: '100-500', label: '$100–$500', hint: '$100 to $499.99', max: 500 },
+  { slug: '500-2500', label: '$500–$2,499', hint: '$500 to $2,499.99', max: 2500 },
+  { slug: '2500-plus', label: '$2,500+', hint: '$2,500 and up', max: Infinity },
 ];

@@ -1,7 +1,7 @@
 ---
 // Homepage gallery: for-sale items, Shopify "Featured" collection first, topped up with the newest products.
 // Shows 10 by default; the Category and Price filters (client request, Nov 16) search the whole pool.
-// Filters are linkable: /?category=art&price=low#featured (the nav's Shop menu uses this).
+// Filters are linkable: /?category=art&price=under-100#featured (the nav's Shop menu uses this).
 // Each card links to its Shopify product page. Sold items drop off on the next build.
 import { getFeaturedItems, DEFAULT_VISIBLE } from '../lib/shopify.js';
 import { site, shopCategories, priceTiers } from '../data/site.js';

@@ -107,7 +107,7 @@ export function categoryOf(p) {
   return shopCategories.find((c) => c.names.some((n) => names.has(n)))?.slug ?? null;
 }
 
-// Low / medium / high (see priceTiers in site.js). $0 "Inquire" pieces count as high.
+// Price tier slug (see priceTiers in site.js). $0 "Inquire" pieces count as the top tier.
 export function priceTierOf({ amount }) {
   const n = Number(amount);
   if (!(n > 0)) return priceTiers[priceTiers.length - 1].slug;
