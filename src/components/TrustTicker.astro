@@ -1,0 +1,51 @@
+---
+// Scrolling trust banner above the homepage Featured Items (Miles, Nov 24, 2026):
+// the three stats plus the eBay and Google badges, streaming right to left.
+// Pauses on hover/focus; stands still (and scrolls sideways by hand) for visitors
+// who have "reduce motion" turned on.
+import { site } from '../data/site.js';
+import { stats } from '../data/consign.js';
+const { rating, reviewCount, reviewsUrl } = site.google;
+const items = [
+  ...stats.map((s) => ({ value: s.value, label: s.label })),
+  { stars: true, value: '5-Star eBay Seller', label: 'Visit our eBay store', href: site.ebayUrl },
+  { stars: true, value: `${rating} on Google`, label: `${reviewCount} five-star reviews`, href: reviewsUrl },
+];
+---
+<section class="ticker border-b border-burgundy-100 bg-white" aria-label="Essex Consignment by the numbers">
+  <div class="ticker-track flex w-max">
+    {[0, 1].map((copy) => (
+      <ul class="flex shrink-0 items-center" aria-hidden={copy === 1 ? 'true' : undefined}>
+        {items.map((it) => {
+          const Tag = it.href ? 'a' : 'div';
+          return (
+            <li class="flex items-center">
+              <Tag
+                {...(it.href && { href: it.href, target: '_blank', rel: 'noopener', tabindex: copy === 1 ? -1 : undefined })}
+                class:list={['flex items-baseline gap-3 whitespace-nowrap px-8 py-4', it.href && 'hover:text-burgundy-600']}
+              >
+                {it.stars && <span class="text-xl text-gold tracking-tight" aria-hidden="true">★★★★★</span>}
+                <span class="gothic-bold text-2xl lining-nums text-burgundy-800">{it.value}</span>
+                <span class="text-sm font-semibold uppercase tracking-wide text-ink">{it.label}</span>
+              </Tag>
+              <span class="text-gold" aria-hidden="true">◆</span>
+            </li>
+          );
+        })}
+      </ul>
+    ))}
+  </div>
+</section>
+
+<style>
+  .ticker { overflow: hidden; }
+  .ticker-track { animation: ticker 45s linear infinite; }
+  .ticker:hover .ticker-track,
+  .ticker:focus-within .ticker-track { animation-play-state: paused; }
+  @keyframes ticker { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) {
+    .ticker { overflow-x: auto; }
+    .ticker-track { animation: none; }
+    .ticker-track > ul[aria-hidden] { display: none; }
+  }
+</style>
