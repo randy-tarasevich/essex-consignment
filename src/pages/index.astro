@@ -2,7 +2,6 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import FeaturedGallery from '../components/FeaturedGallery.astro';
 import TrustTicker from '../components/TrustTicker.astro';
-import { site } from '../data/site.js';
 import { results, usd } from '../data/consign.js';
 const highlights = results.filter((r) => r.homepage).sort((a, b) => a.homepage - b.homepage);
 ---
@@ -11,13 +10,6 @@ const highlights = results.filter((r) => r.homepage).sort((a, b) => a.homepage -
   <TrustTicker />
   <!-- Featured items lead the page (designer direction, Nov 2026: hero removed). -->
   <FeaturedGallery headingLevel="h1" />
-  <!-- Consign prompt: keeps sellers' path near the top now that the hero is gone -->
-  <section class="bg-burgundy-800 text-white" aria-label="Consign with us">
-    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-6">
-      <p class="font-display text-xl font-bold sm:text-2xl">Have something to sell? <span class="text-burgundy-100">{site.tagline}</span></p>
-      <a href="/consign/" class="rounded-btn bg-white px-6 py-3 text-xs font-extrabold uppercase tracking-[0.2em] text-burgundy-900 hover:bg-burgundy-50">Consign with us</a>
-    </div>
-  </section>
   <!-- Sales results highlights -->
   <section aria-labelledby="sold-heading">
     <div class="mx-auto max-w-6xl px-4 py-16">
