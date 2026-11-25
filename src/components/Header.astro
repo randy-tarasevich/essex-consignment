@@ -16,7 +16,7 @@ const langBtn = 'lang-toggle notranslate rounded-btn border border-burgundy-700 
 
     <!-- Desktop nav -->
     <nav aria-label="Main" class="hidden nav:block">
-      <ul class="flex items-center gap-x-4 whitespace-nowrap text-base font-bold uppercase tracking-[0.08em]">
+      <ul class="flex items-center gap-x-3.5 whitespace-nowrap text-[1.3rem] font-bold uppercase tracking-[0.04em]">
         {nav.map((item, i) => (
           <>
             <li>
@@ -28,7 +28,7 @@ const langBtn = 'lang-toggle notranslate rounded-btn border border-burgundy-700 
             </li>
             {i === 0 && (
               <li class="relative" id="shop-menu">
-                <button type="button" id="shop-toggle" aria-expanded="false" aria-controls="shop-panel" class="inline-flex items-center gap-1 font-bold uppercase tracking-[0.08em] hover:text-burgundy-600">
+                <button type="button" id="shop-toggle" aria-expanded="false" aria-controls="shop-panel" class="inline-flex items-center gap-1 font-bold uppercase tracking-[0.04em] hover:text-burgundy-600">
                   <span translate="no"><span class="i18n-en">Shop</span><span class="i18n-es">Tienda</span></span>
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true"><path d="M5.5 7.5 10 12l4.5-4.5z"/></svg>
                 </button>
@@ -65,7 +65,7 @@ const langBtn = 'lang-toggle notranslate rounded-btn border border-burgundy-700 
 
   <!-- Mobile menu panel -->
   <nav id="mobile-menu" aria-label="Main" class="hidden border-t border-burgundy-100 nav:hidden">
-    <ul class="mx-auto max-w-6xl px-4 py-2 text-base font-bold uppercase tracking-[0.15em]">
+    <ul class="mx-auto max-w-6xl px-4 py-2 text-[1.3rem] font-bold uppercase tracking-[0.15em]">
       {nav.map((item, i) => (
         <>
           <li class="border-b border-burgundy-50 last:border-0">
