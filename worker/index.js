@@ -2,7 +2,7 @@
 //
 // Serves the Astro site from ./dist and handles these API routes:
 //   POST /api/inquiry          (Contact and Consign With Us forms)
-//   GET  /api/photo/<key>      (photos visitors attached to the Contact form, stored in R2)
+//   GET  /api/photo/<key>      (photos visitors attached to the Contact or Consign With Us form, stored in R2)
 //   POST /api/shopify-webhook  (Shopify product/collection webhooks -> debounced site rebuild)
 //
 // Flow: spam check (honeypot + Cloudflare Turnstile) → find or create the
@@ -20,7 +20,7 @@
 //   SHOPIFY_WEBHOOK_SECRET     Shopify admin → Settings → Notifications → Webhooks → signing secret
 //   DEPLOY_HOOK_URL            Cloudflare Workers Builds deploy hook (Settings → Builds → Deploy Hooks)
 // Bindings (wrangler.jsonc):
-//   PHOTOS                     R2 bucket for Contact-form photos (client request, Nov 24, 2026)
+//   PHOTOS                     R2 bucket for Contact and Consign form photos (client request, Nov 24, 2026)
 // Optional:
 //   SHOPIFY_API_VERSION        default 2026-10
 
@@ -121,10 +121,13 @@ export class RebuildDebouncer extends DurableObject {
 async function handleInquiry(request, env, ctx) {
   const wantsJson = (request.headers.get('accept') || '').includes('application/json');
   const origin = new URL(request.url).origin;
+  // Which form sent this; no-JS failures go back to that form's page.
+  let formType = 'contact';
+  const errorPage = () => (formType === 'consignor' ? '/consign/?error=1#consign-form' : '/contact/?error=1');
   const respond = (ok, status, message, type, extra = {}) =>
     wantsJson
       ? json({ ok, message, ...extra }, status)
-      : Response.redirect(`${origin}${ok ? `/thank-you/?type=${type}` : `/contact/?error=1`}`, 303);
+      : Response.redirect(`${origin}${ok ? `/thank-you/?type=${type}` : errorPage()}`, 303);
 
   let form;
   try {
@@ -132,6 +135,8 @@ async function handleInquiry(request, env, ctx) {
   } catch {
     return respond(false, 400, 'Could not read the form.');
   }
+
+  formType = str(form.get('type')) === 'consignor' ? 'consignor' : 'contact';
 
   // Honeypot: real people never fill this hidden field. Pretend success so bots learn nothing.
   if (str(form.get('company_website'))) return respond(true, 200, 'Thanks!', 'contact');
@@ -198,7 +203,7 @@ export function validate(d) {
   return null;
 }
 
-// ---------- photos (Contact form, client request Nov 24, 2026) ----------
+// ---------- photos (Contact and Consign forms, client request Nov 24, 2026) ----------
 //
 // Visitors can attach up to 5 photos of items. The browser shrinks big phone photos before
 // sending. Each photo is saved to the private R2 bucket under a random key; the email and the

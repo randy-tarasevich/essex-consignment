@@ -2,7 +2,9 @@
 // Consign With Us: a copy of the old site's "Ebay Items Wanted" page (Miles, Nov 24, 2026).
 // The old page showed the item list as an image; here it's real text styled to match,
 // so it stays sharp, is readable by search engines, and works with the Spanish toggle.
+// The consignment form (with photo upload) sits below the list (brought back Nov 25, 2026).
 import BaseLayout from '../layouts/BaseLayout.astro';
+import InquiryForm from '../components/InquiryForm.astro';
 import { wanted } from '../data/consign.js';
 import { site } from '../data/site.js';
 const half = Math.ceil(wanted.length / 2);
@@ -33,6 +35,19 @@ const columns = [wanted.slice(0, half), wanted.slice(half)];
       <p class="mt-3">
         <a href={`mailto:${site.email}`} class="text-lg font-bold text-burgundy-800 hover:underline sm:text-xl">{site.email}</a>
       </p>
+    </div>
+  </section>
+
+  <!-- Consign With Us form: saves to Shopify tagged "consignor", photos go to R2 -->
+  <section id="consign-form" class="scroll-mt-4 border-t border-burgundy-100" aria-labelledby="consign-form-heading">
+    <div class="mx-auto max-w-xl px-4 py-12 sm:py-16">
+      <h2 id="consign-form-heading" class="text-3xl font-bold">Consign with Us</h2>
+      <p class="mt-2">Tell us what you have and attach a few photos if you can. We'll get back to you with next steps.</p>
+      <p id="form-error" hidden class="mt-2 text-sm font-semibold text-red-700">Sorry, your message didn't go through. Please try again or call us.</p>
+      <script is:inline>
+        if (new URLSearchParams(location.search).has('error')) document.getElementById('form-error').hidden = false;
+      </script>
+      <div class="mt-6"><InquiryForm type="consignor" /></div>
     </div>
   </section>
 </BaseLayout>

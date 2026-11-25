@@ -5,8 +5,8 @@
 // Works without JavaScript (redirects to /thank-you/); with JavaScript it shows the result inline.
 const { type = 'contact' } = Astro.props; // 'contact' | 'consignor'
 const isConsignor = type === 'consignor';
-// Photo upload (Miles, Nov 24, 2026): Contact form only for now. Photos go to R2 via the Worker.
-const { photos = !isConsignor } = Astro.props;
+// Photo upload (Miles, Nov 24, 2026): on both forms (added to Consign With Us Nov 25). Photos go to R2 via the Worker.
+const { photos = true } = Astro.props;
 // Turnstile site key is public. Real key covers essexconsignment.com + the workers.dev staging URL;
 // local dev uses Cloudflare's always-pass test key so the widget works on localhost.
 const TURNSTILE_SITE_KEY = '0x4AAAAAAF05rsXl12KtrHVR';
