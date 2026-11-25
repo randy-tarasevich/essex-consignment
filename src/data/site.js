@@ -60,7 +60,7 @@ export const nav = [
   { label: 'Home', es: 'Inicio', href: '/' },
   // Hidden from the nav until Al & Miles decide whether to keep the page (Nov 2026). The page itself still exists.
   // { label: 'Announcements', es: 'Anuncios', href: '/announcements/' },
-  { label: 'Submit Your Items', es: 'Envíe sus artículos', href: '/consign/' },
+  { label: 'Consign With Us', es: 'Consignar', href: '/consign/' },
   { label: 'Sales Results', es: 'Resultados', href: '/results/' },
   { label: 'Contact', es: 'Contacto', href: '/contact/' },
 ];

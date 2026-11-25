@@ -1,6 +1,6 @@
 ---
-// Submit Your Items (nav label, Nov 25): based on the old site's "Ebay Items Wanted" page (Miles, Nov 24, 2026).
-// Heading changed to "Other types of items that we accept" (Nov 25).
+// Consign With Us: based on the old site's "Ebay Items Wanted" page (Miles, Nov 24, 2026).
+// Heading changed to "Other types of items that we accept" (Nov 25); "Submit Your Items" button jumps to the form.
 // The old page showed the item list as an image; here it's real text styled to match,
 // so it stays sharp, is readable by search engines, and works with the Spanish toggle.
 // The consignment form (with photo upload) sits below the list (brought back Nov 25, 2026).
@@ -11,12 +11,16 @@ import { site } from '../data/site.js';
 const half = Math.ceil(wanted.length / 2);
 const columns = [wanted.slice(0, half), wanted.slice(half)];
 ---
-<BaseLayout title="Submit Your Items" description="Essex Consignment wants your coins, comics, sports cards, sterling silver, jewelry, watches, designer bags, memorabilia, vintage toys, records, and more. eBay Top Rated Seller for 24 years.">
+<BaseLayout title="Consign With Us" description="Essex Consignment wants your coins, comics, sports cards, sterling silver, jewelry, watches, designer bags, memorabilia, vintage toys, records, and more. eBay Top Rated Seller for 24 years.">
   <section class="bg-white">
     <div class="mx-auto max-w-5xl px-4 pt-10 pb-20 text-center sm:pt-12">
       <h1 class="text-[2rem] font-extrabold leading-tight tracking-tight text-burgundy-800 sm:text-5xl sm:leading-tight">
         Other types of items that we accept
       </h1>
+      <a href="#consign-form"
+        class="mt-8 inline-flex items-center gap-2 rounded-btn bg-burgundy-700 px-8 py-4 text-base font-bold uppercase tracking-[0.12em] text-white shadow-sm hover:bg-burgundy-800 transition-colors sm:text-lg">
+        Submit Your Items <span aria-hidden="true">↓</span>
+      </a>
 
       <div class="mt-12 grid justify-center gap-x-12 text-left text-[1.0625rem] leading-[1.6] text-black sm:grid-cols-[auto_auto]">
         {columns.map((col) => (
