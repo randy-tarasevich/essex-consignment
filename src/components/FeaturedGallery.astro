@@ -18,7 +18,12 @@ const note =
   : items.length === 0 ? 'Preview: Shopify not connected yet'
   : '';
 
-const pill = 'gallery-filter rounded-btn border border-burgundy-100 bg-white px-3 py-2 text-xs font-bold uppercase tracking-[0.12em] text-burgundy-800 hover:border-burgundy-700 aria-pressed:border-burgundy-700 aria-pressed:bg-burgundy-700 aria-pressed:text-white';
+// Filters are dropdowns (client request, Nov 25): one toggle per group, options open in a panel below.
+const filterGroups = [
+  { key: 'category', label: 'Category', options: shopCategories },
+  { key: 'price', label: 'Price', options: priceTiers },
+];
+const option = 'gallery-filter flex w-full items-center justify-between gap-6 px-4 py-2.5 text-left text-xs font-bold uppercase tracking-[0.12em] text-burgundy-800 hover:bg-burgundy-50 focus-visible:bg-burgundy-50 focus-visible:outline-none aria-pressed:bg-burgundy-700 aria-pressed:text-white';
 ---
 <section id="featured" class="mx-auto max-w-6xl scroll-mt-4 px-4 pt-6 pb-12 sm:pt-8 sm:pb-16" aria-labelledby="featured-heading">
   <div class="flex flex-wrap items-end justify-between gap-4">
@@ -36,22 +41,33 @@ const pill = 'gallery-filter rounded-btn border border-burgundy-100 bg-white px-
     </div>
   </div>
 
-  <!-- Filters -->
-  <div class="mt-3 flex flex-col gap-3 border-y border-burgundy-100 py-4 lg:flex-row lg:items-center lg:gap-8">
-    <div class="flex flex-wrap items-center gap-2" role="group" aria-labelledby="filter-category-label">
-      <span id="filter-category-label" class="mr-1 text-xs font-bold uppercase tracking-[0.2em] text-ink/70">Category</span>
-      <button type="button" class={pill} data-filter="category" data-value="" aria-pressed="true">All</button>
-      {shopCategories.map((c) => (
-        <button type="button" class={pill} data-filter="category" data-value={c.slug} aria-pressed="false">{c.label}</button>
-      ))}
-    </div>
-    <div class="flex flex-wrap items-center gap-2" role="group" aria-labelledby="filter-price-label">
-      <span id="filter-price-label" class="mr-1 text-xs font-bold uppercase tracking-[0.2em] text-ink/70">Price</span>
-      <button type="button" class={pill} data-filter="price" data-value="" aria-pressed="true">All</button>
-      {priceTiers.map((t) => (
-        <button type="button" class={pill} data-filter="price" data-value={t.slug} aria-pressed="false" title={t.hint}>{t.label}</button>
-      ))}
-    </div>
+  <!-- Filters: Category and Price dropdowns -->
+  <div class="mt-3 flex flex-col gap-3 border-y border-burgundy-100 py-4 sm:flex-row sm:items-center">
+    {filterGroups.map((g) => (
+      <div class="filter-dropdown relative w-full sm:w-auto" data-group={g.key}>
+        <button
+          type="button"
+          id={`filter-${g.key}-toggle`}
+          class="filter-toggle inline-flex w-full items-center justify-between gap-3 rounded-btn border border-burgundy-100 bg-white px-4 py-3 text-xs font-bold uppercase tracking-[0.12em] text-burgundy-800 hover:border-burgundy-700 aria-expanded:border-burgundy-700 sm:w-auto"
+          aria-expanded="false"
+          aria-controls={`filter-${g.key}-panel`}
+        >
+          <span><span class="mr-1 tracking-[0.2em] text-ink/70">{g.label}:</span> <span class="filter-current">All</span></span>
+          <svg class="filter-chevron h-3 w-3 shrink-0 transition-transform" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" /></svg>
+        </button>
+        <div
+          id={`filter-${g.key}-panel`}
+          class="filter-panel absolute left-0 top-full z-20 mt-2 hidden w-full bg-white py-2 shadow-lg ring-1 ring-burgundy-100 sm:w-max sm:min-w-full"
+          role="group"
+          aria-label={`Filter by ${g.label.toLowerCase()}`}
+        >
+          <button type="button" class={option} data-filter={g.key} data-value="" data-label="All" aria-pressed="true">All<span class="filter-check" aria-hidden="true">✓</span></button>
+          {g.options.map((o) => (
+            <button type="button" class={option} data-filter={g.key} data-value={o.slug} data-label={o.label} aria-pressed="false" title={o.hint}>{o.label}<span class="filter-check" aria-hidden="true">✓</span></button>
+          ))}
+        </div>
+      </div>
+    ))}
   </div>
   <p id="gallery-status" class="mt-3 text-sm text-ink/70" aria-live="polite"></p>
 
@@ -96,6 +112,7 @@ const pill = 'gallery-filter rounded-btn border border-burgundy-100 bg-white px-
   const cards = Array.from(document.querySelectorAll<HTMLElement>('.gallery-card'));
   const empty = document.getElementById('gallery-empty');
   const status = document.getElementById('gallery-status');
+  const dropdowns = Array.from(document.querySelectorAll<HTMLElement>('.filter-dropdown'));
   const state = { category: '', price: '' };
 
   function apply(updateUrl = true) {
@@ -111,6 +128,11 @@ const pill = 'gallery-filter rounded-btn border border-burgundy-100 bg-white px-
     for (const b of buttons) {
       b.setAttribute('aria-pressed', String(state[b.dataset.filter as 'category' | 'price'] === b.dataset.value));
     }
+    for (const dd of dropdowns) {
+      const current = dd.querySelector<HTMLButtonElement>('.gallery-filter[aria-pressed="true"]');
+      const label = dd.querySelector('.filter-current');
+      if (label) label.textContent = current?.dataset.label ?? 'All';
+    }
     empty?.classList.toggle('hidden', shown > 0);
     if (status) status.textContent = filtering ? `Showing ${shown} ${shown === 1 ? 'piece' : 'pieces'}` : '';
     if (updateUrl) {
@@ -123,10 +145,58 @@ const pill = 'gallery-filter rounded-btn border border-burgundy-100 bg-white px-
     }
   }
 
+  // Dropdown open/close
+  const parts = (dd: HTMLElement) => ({
+    toggle: dd.querySelector<HTMLButtonElement>('.filter-toggle')!,
+    panel: dd.querySelector<HTMLElement>('.filter-panel')!,
+    options: Array.from(dd.querySelectorAll<HTMLButtonElement>('.gallery-filter')),
+  });
+  function setOpen(dd: HTMLElement, open: boolean, focusOption = false) {
+    const { toggle, panel, options } = parts(dd);
+    toggle.setAttribute('aria-expanded', String(open));
+    panel.classList.toggle('hidden', !open);
+    dd.querySelector('.filter-chevron')?.classList.toggle('rotate-180', open);
+    if (open && focusOption) (options.find((o) => o.getAttribute('aria-pressed') === 'true') ?? options[0])?.focus();
+  }
+  const closeAll = (except?: HTMLElement) => dropdowns.forEach((dd) => dd !== except && setOpen(dd, false));
+
+  for (const dd of dropdowns) {
+    const { toggle, options } = parts(dd);
+    toggle.addEventListener('click', () => {
+      const open = toggle.getAttribute('aria-expanded') !== 'true';
+      closeAll(dd);
+      setOpen(dd, open, open);
+    });
+    toggle.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); closeAll(dd); setOpen(dd, true, true); }
+    });
+    dd.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        setOpen(dd, false);
+        toggle.focus();
+        return;
+      }
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      const i = options.indexOf(document.activeElement as HTMLButtonElement);
+      if (i === -1) return;
+      e.preventDefault();
+      options[(i + (e.key === 'ArrowDown' ? 1 : options.length - 1)) % options.length].focus();
+    });
+    // Close when focus leaves the dropdown (Tab away)
+    dd.addEventListener('focusout', (e) => {
+      if (!dd.contains(e.relatedTarget as Node | null)) setOpen(dd, false);
+    });
+  }
+  document.addEventListener('click', (e) => {
+    if (!(e.target as Element).closest('.filter-dropdown')) closeAll();
+  });
+
   for (const b of buttons) {
     b.addEventListener('click', () => {
       state[b.dataset.filter as 'category' | 'price'] = b.dataset.value ?? '';
       apply();
+      const dd = b.closest<HTMLElement>('.filter-dropdown');
+      if (dd) { setOpen(dd, false); parts(dd).toggle.focus(); }
     });
   }
 
@@ -137,3 +207,8 @@ const pill = 'gallery-filter rounded-btn border border-burgundy-100 bg-white px-
   if (valid('price', params.get('price'))) state.price = params.get('price')!;
   if (state.category || state.price) apply(false);
 </script>
+
+<style>
+  /* Checkmark only on the active option */
+  .gallery-filter[aria-pressed='false'] .filter-check { visibility: hidden; }
+</style>
