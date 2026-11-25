@@ -1,5 +1,6 @@
 ---
-// Consign With Us: a copy of the old site's "Ebay Items Wanted" page (Miles, Nov 24, 2026).
+// Submit Your Items (nav label, Nov 25): based on the old site's "Ebay Items Wanted" page (Miles, Nov 24, 2026).
+// Heading changed to "Other types of items that we accept" (Nov 25).
 // The old page showed the item list as an image; here it's real text styled to match,
 // so it stays sharp, is readable by search engines, and works with the Spanish toggle.
 // The consignment form (with photo upload) sits below the list (brought back Nov 25, 2026).
@@ -10,12 +11,11 @@ import { site } from '../data/site.js';
 const half = Math.ceil(wanted.length / 2);
 const columns = [wanted.slice(0, half), wanted.slice(half)];
 ---
-<BaseLayout title="Ebay Items Wanted" description="Essex Consignment wants your coins, comics, sports cards, sterling silver, jewelry, watches, designer bags, memorabilia, vintage toys, records, and more. eBay Top Rated Seller for 24 years.">
+<BaseLayout title="Submit Your Items" description="Essex Consignment wants your coins, comics, sports cards, sterling silver, jewelry, watches, designer bags, memorabilia, vintage toys, records, and more. eBay Top Rated Seller for 24 years.">
   <section class="bg-white">
     <div class="mx-auto max-w-5xl px-4 pt-10 pb-20 text-center sm:pt-12">
       <h1 class="text-[2rem] font-extrabold leading-tight tracking-tight text-burgundy-800 sm:text-5xl sm:leading-tight">
-        Ebay Items Wanted<br />
-        <span>Top Rated Seller <span class="whitespace-nowrap">(24 Yrs)</span></span>
+        Other types of items that we accept
       </h1>
 
       <div class="mt-12 grid justify-center gap-x-12 text-left text-[1.0625rem] leading-[1.6] text-black sm:grid-cols-[auto_auto]">
