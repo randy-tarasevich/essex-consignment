@@ -1,9 +1,10 @@
 ---
 // Consign With Us: based on the old site's "Ebay Items Wanted" page (Miles, Nov 24, 2026).
-// Heading changed to "Other types of items that we accept" (Nov 25); "Submit Your Items" button jumps to the form.
+// Heading changed to "Other types of items that we accept" (Nov 25).
 // The old page showed the item list as an image; here it's real text styled to match,
 // so it stays sharp, is readable by search engines, and works with the Spanish toggle.
-// The consignment form (with photo upload) sits below the list (brought back Nov 25, 2026).
+// Layout (Nov 25, 2026): item list on the left, consignment form card ("Tell us what you have") on the right
+// from xl (1280px) up; below that the form stacks under the list and the "Submit Your Items" button jumps to it.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryForm from '../components/InquiryForm.astro';
 import { wanted } from '../data/consign.js';
@@ -13,45 +14,50 @@ const columns = [wanted.slice(0, half), wanted.slice(half)];
 ---
 <BaseLayout title="Consign With Us" description="Essex Consignment wants your coins, comics, sports cards, sterling silver, jewelry, watches, designer bags, memorabilia, vintage toys, records, and more. eBay Top Rated Seller for 24 years.">
   <section class="bg-white">
-    <div class="mx-auto max-w-5xl px-4 pt-10 pb-20 text-center sm:pt-12">
-      <h1 class="text-[2rem] font-extrabold leading-tight tracking-tight text-burgundy-800 sm:text-5xl sm:leading-tight">
-        Other types of items that we accept
-      </h1>
-      <a href="#consign-form"
-        class="mt-8 inline-flex items-center gap-2 rounded-btn bg-burgundy-700 px-8 py-4 text-base font-bold uppercase tracking-[0.12em] text-white shadow-sm hover:bg-burgundy-800 transition-colors sm:text-lg">
-        Submit Your Items <span aria-hidden="true">↓</span>
-      </a>
+    <div class="mx-auto max-w-7xl px-4 pt-10 pb-20 sm:pt-12 xl:flex xl:items-start xl:gap-12">
+      <div class="text-center xl:min-w-0 xl:flex-1">
+        <h1 class="text-[2rem] font-extrabold leading-tight tracking-tight text-burgundy-800 sm:text-5xl sm:leading-tight">
+          Other types of items that we accept
+        </h1>
+        <!-- Only needed when the form is below the list (hidden once they sit side by side) -->
+        <a href="#consign-form"
+          class="mt-8 inline-flex items-center gap-2 rounded-btn bg-burgundy-700 px-8 py-4 text-base font-bold uppercase tracking-[0.12em] text-white shadow-sm hover:bg-burgundy-800 transition-colors sm:text-lg xl:hidden">
+          Submit Your Items <span aria-hidden="true">↓</span>
+        </a>
 
-      <div class="mt-12 grid justify-center gap-x-12 text-left text-[1.0625rem] leading-[1.6] text-black sm:grid-cols-[auto_auto]">
-        {columns.map((col) => (
-          <ul>
-            {col.map(([lead, rest, line2]) => (
-              <li><strong class="font-black">{lead}</strong> {rest}{line2 && <><br />{line2}</>}</li>
-            ))}
-          </ul>
-        ))}
+        <div class="mt-12 grid justify-center gap-x-12 text-left text-[1.0625rem] leading-[1.6] text-black sm:grid-cols-[auto_auto] xl:gap-x-10">
+          {columns.map((col) => (
+            <ul>
+              {col.map(([lead, rest, line2]) => (
+                <li><strong class="font-black">{lead}</strong> {rest}{line2 && <><br />{line2}</>}</li>
+              ))}
+            </ul>
+          ))}
+        </div>
+
+        <a href={site.phoneHref}
+          class="mt-14 inline-block rounded-btn bg-burgundy-800 px-6 py-3 text-base font-semibold text-white hover:bg-burgundy-900 transition-colors sm:px-12 sm:text-xl">
+          {site.name} <span class="whitespace-nowrap">{site.phone}</span>
+        </a>
+        <p class="mt-3">
+          <a href={`mailto:${site.email}`} class="text-lg font-bold text-burgundy-800 hover:underline sm:text-xl">{site.email}</a>
+        </p>
       </div>
 
-      <a href={site.phoneHref}
-        class="mt-14 inline-block rounded-btn bg-burgundy-800 px-6 py-3 text-base font-semibold text-white hover:bg-burgundy-900 transition-colors sm:px-12 sm:text-xl">
-        {site.name} <span class="whitespace-nowrap">{site.phone}</span>
-      </a>
-      <p class="mt-3">
-        <a href={`mailto:${site.email}`} class="text-lg font-bold text-burgundy-800 hover:underline sm:text-xl">{site.email}</a>
-      </p>
-    </div>
-  </section>
-
-  <!-- Consign With Us form: saves to Shopify tagged "consignor", photos go to R2 -->
-  <section id="consign-form" class="scroll-mt-4 border-t border-burgundy-100" aria-labelledby="consign-form-heading">
-    <div class="mx-auto max-w-xl px-4 py-12 sm:py-16">
-      <h2 id="consign-form-heading" class="text-3xl font-bold">Consign with Us</h2>
-      <p class="mt-2">Tell us what you have and attach a few photos if you can. We'll get back to you with next steps.</p>
-      <p id="form-error" hidden class="mt-2 text-sm font-semibold text-red-700">Sorry, your message didn't go through. Please try again or call us.</p>
-      <script is:inline>
-        if (new URLSearchParams(location.search).has('error')) document.getElementById('form-error').hidden = false;
-      </script>
-      <div class="mt-6"><InquiryForm type="consignor" /></div>
+      <!-- Consign With Us form: saves to Shopify tagged "consignor", photos go to R2 -->
+      <section id="consign-form" class="mx-auto mt-16 max-w-xl scroll-mt-4 overflow-hidden border border-[#ece8e6] bg-white shadow-[0_1px_2px_rgba(31,26,27,0.06),0_12px_32px_rgba(31,26,27,0.08)] xl:mx-0 xl:mt-0 xl:w-[520px] xl:max-w-none xl:flex-none" aria-labelledby="consign-form-heading">
+        <div class="bg-burgundy-800 px-6 py-6 sm:px-7">
+          <h2 id="consign-form-heading" class="text-[1.375rem] font-extrabold text-white">Tell us what you have</h2>
+          <p class="mt-1 text-[0.9375rem] text-[#ecd6da]">Takes about 2 minutes</p>
+        </div>
+        <div class="p-6 sm:p-7">
+          <p id="form-error" hidden class="mb-4 text-sm font-semibold text-red-700">Sorry, your message didn't go through. Please try again or call us.</p>
+          <script is:inline>
+            if (new URLSearchParams(location.search).has('error')) document.getElementById('form-error').hidden = false;
+          </script>
+          <InquiryForm type="consignor" card />
+        </div>
+      </section>
     </div>
   </section>
 </BaseLayout>

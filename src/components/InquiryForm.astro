@@ -16,9 +16,16 @@ const siteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || (import.meta.env.DE
 // Web3Forms "Essex Consignment" form (public key). Sends to info@shorelinewebsolutionsct.com during
 // development; switch to a key that sends to al@essexconsignment.com at launch.
 const web3formsKey = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY || '154ab7cf-7f4c-4172-b72c-3974e1ad6648';
-const field = 'mt-1 w-full border border-burgundy-100 bg-white px-3 py-2 font-normal';
+// card: the boxed "Tell us what you have" style used on Consign With Us (Nov 25, 2026). Contact keeps the plain style.
+const { card = false } = Astro.props;
+const plainField = 'mt-1 w-full border border-burgundy-100 bg-white px-3 py-2 font-normal';
+const cardInput = 'mt-2 block w-full border border-stone-300 bg-white px-3.5 text-base font-normal focus:outline-2 focus:outline-offset-1 focus:outline-burgundy-800';
+const field = card ? `${cardInput} h-[46px]` : plainField;
+const area = card ? `${cardInput} py-3 leading-normal placeholder:text-stone-400` : plainField;
+const label = card ? 'block text-[0.9375rem] font-semibold' : 'block text-sm font-semibold';
+const optional = card ? 'font-normal text-stone-500' : 'font-normal text-burgundy-600';
 ---
-<form class="inquiry-form space-y-4 max-w-xl" method="post" action="/api/inquiry" enctype="multipart/form-data" data-notify-key={web3formsKey} novalidate>
+<form class={`inquiry-form ${card ? 'space-y-5' : 'space-y-4 max-w-xl'}`} method="post" action="/api/inquiry" enctype="multipart/form-data" data-notify-key={web3formsKey} novalidate>
   <input type="hidden" name="type" value={type} />
 
   <!-- Honeypot: hidden from people, filled in by bots -->
@@ -27,38 +34,53 @@ const field = 'mt-1 w-full border border-burgundy-100 bg-white px-3 py-2 font-no
   </div>
 
   <div class="grid gap-4 sm:grid-cols-2">
-    <label class="block text-sm font-semibold">First name
+    <label class={label}>First name
       <input name="firstName" required maxlength="80" autocomplete="given-name" class={field} />
     </label>
-    <label class="block text-sm font-semibold">Last name
+    <label class={label}>Last name
       <input name="lastName" required maxlength="80" autocomplete="family-name" class={field} />
     </label>
   </div>
-  <label class="block text-sm font-semibold">Email
-    <input type="email" name="email" required maxlength="254" autocomplete="email" class={field} />
+  <div class={card ? 'grid gap-4 sm:grid-cols-2' : 'space-y-4'}>
+    <label class={label}>Email
+      <input type="email" name="email" required maxlength="254" autocomplete="email" class={field} />
+    </label>
+    <label class={label}>Phone <span class={optional}>(optional)</span>
+      <input type="tel" name="phone" maxlength="40" autocomplete="tel" class={field} />
+    </label>
+  </div>
+  <label class={label}>{isConsignor ? 'What would you like to consign?' : 'Message'}
+    <textarea name="message" rows={card ? 4 : 5} required maxlength="4000" class={area}
+      placeholder={card && isConsignor ? "e.g. Sterling flatware set, a pair of mid-century lamps, my dad's coin collection…" : undefined}></textarea>
   </label>
-  <label class="block text-sm font-semibold">Phone <span class="font-normal text-burgundy-600">(optional)</span>
-    <input type="tel" name="phone" maxlength="40" autocomplete="tel" class={field} />
-  </label>
-  <label class="block text-sm font-semibold">{isConsignor ? 'What would you like to consign?' : 'Message'}
-    <textarea name="message" rows="5" required maxlength="4000" class={field}></textarea>
-  </label>
-  {photos && (
+  {photos && (card ? (
+    <label class={label}>Photos <span class={optional}>(optional, up to 5)</span>
+      <span class="mt-2 flex cursor-pointer flex-col items-center gap-1.5 border-[1.5px] border-dashed border-[#c9b3b7] bg-[#fbf8f7] px-4 py-6 text-center transition-colors hover:bg-burgundy-50 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-burgundy-800">
+        <svg aria-hidden="true" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="text-burgundy-800"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+        <span class="text-base font-bold text-burgundy-800">Add photos</span>
+        <span class="text-sm font-normal text-stone-600">Take a picture or choose from your phone or computer</span>
+        <input type="file" name="photos" accept="image/*" multiple class="sr-only" />
+      </span>
+      <span class="photo-status mt-1 block text-xs font-normal text-burgundy-600" aria-live="polite"></span>
+    </label>
+  ) : (
     <label class="block text-sm font-semibold">Photos of your item(s) <span class="font-normal text-burgundy-600">(optional, up to 5)</span>
       <input type="file" name="photos" accept="image/*" multiple
         class="mt-1 block w-full border border-burgundy-100 bg-white px-3 py-2 font-normal file:mr-3 file:rounded-btn file:border-0 file:bg-burgundy-700 file:px-4 file:py-2 file:font-semibold file:text-white hover:file:bg-burgundy-800" />
       <span class="photo-status mt-1 block text-xs font-normal text-burgundy-600" aria-live="polite"></span>
     </label>
-  )}
-  <label class="flex items-start gap-2 text-sm">
-    <input type="checkbox" name="acceptsMarketing" class="mt-1" />
+  ))}
+  <label class={card ? 'flex min-h-11 items-center gap-3 text-[0.9375rem]' : 'flex items-start gap-2 text-sm'}>
+    <input type="checkbox" name="acceptsMarketing" class={card ? 'size-5 accent-burgundy-800' : 'mt-1'} />
     <span>Email me about new arrivals and shop news.</span>
   </label>
   <p class="text-xs text-burgundy-600">We use your details only to reply and never sell them. See our <a href="/privacy/" class="underline">Privacy Policy</a>.</p>
 
   {siteKey && <div class="cf-turnstile" data-sitekey={siteKey} data-theme="light" data-appearance="interaction-only"></div>}
 
-  <button type="submit" class="rounded-btn bg-burgundy-700 px-6 py-3 font-semibold text-white hover:bg-burgundy-800 disabled:opacity-60">
+  <button type="submit" class={card
+    ? 'h-[54px] w-full bg-burgundy-800 text-[1.0625rem] font-bold text-white hover:bg-burgundy-900 disabled:opacity-60'
+    : 'rounded-btn bg-burgundy-700 px-6 py-3 font-semibold text-white hover:bg-burgundy-800 disabled:opacity-60'}>
     {isConsignor ? 'Send consignment inquiry' : 'Send message'}
   </button>
   <p class="form-status text-sm" role="status" aria-live="polite"></p>
@@ -100,7 +122,7 @@ const field = 'mt-1 w-full border border-burgundy-100 bg-white px-3 py-2 font-no
 
   for (const input of document.querySelectorAll('form.inquiry-form input[name="photos"]')) {
     input.addEventListener('change', () => {
-      const note = input.parentElement.querySelector('.photo-status');
+      const note = input.closest('label').querySelector('.photo-status');
       const problem = photoProblem(input);
       const n = input.files.length;
       note.className = `photo-status mt-1 block text-xs ${problem ? 'font-semibold text-red-700' : 'font-normal text-burgundy-600'}`;
