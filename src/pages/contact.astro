@@ -42,13 +42,19 @@ import SocialLinks from '../components/SocialLinks.astro';
         <p class="mt-2"><a href={site.map.placeUrl} target="_blank" rel="noopener" class="text-burgundy-700 hover:underline">Get directions on Google Maps</a></p>
       </div>
     </div>
-    <div>
-      <h2 class="text-2xl font-bold">Send us a message</h2>
-      <p id="form-error" hidden class="mt-2 text-sm font-semibold text-red-700">Sorry, your message didn't go through. Please try again or call us.</p>
-      <script is:inline>
-        if (new URLSearchParams(location.search).has('error')) document.getElementById('form-error').hidden = false;
-      </script>
-      <div class="mt-4"><InquiryForm type="contact" /></div>
-    </div>
+    <!-- Contact form card: same boxed style as Consign With Us (Nov 26, 2026) -->
+    <section class="self-start overflow-hidden border border-[#ece8e6] bg-white shadow-[0_1px_2px_rgba(31,26,27,0.06),0_12px_32px_rgba(31,26,27,0.08)]" aria-labelledby="contact-form-heading">
+      <div class="bg-burgundy-800 px-6 py-6 sm:px-7">
+        <h2 id="contact-form-heading" class="text-[1.375rem] font-extrabold text-white">Send us a message</h2>
+        <p class="mt-1 text-[0.9375rem] text-[#ecd6da]">Or call us at <a href={site.phoneHref} class="whitespace-nowrap font-semibold text-white hover:underline">{site.phone}</a></p>
+      </div>
+      <div class="p-6 sm:p-7">
+        <p id="form-error" hidden class="mb-4 text-sm font-semibold text-red-700">Sorry, your message didn't go through. Please try again or call us.</p>
+        <script is:inline>
+          if (new URLSearchParams(location.search).has('error')) document.getElementById('form-error').hidden = false;
+        </script>
+        <InquiryForm type="contact" card />
+      </div>
+    </section>
   </section>
 </BaseLayout>
