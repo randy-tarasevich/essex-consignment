@@ -62,23 +62,39 @@ export const situations = [
 // From the "Sell your stuff" ad. Numbers are whole dollars.
 // homepage: highlights shown on the homepage "Sell your stuff" section and the consign page, in this order (1-3).
 // Miles (Nov 17): one each of Art, Car, Furniture.
+// es: our own short Spanish name, shown on Sales Results in Spanish mode instead of Google's
+//     longer machine translation (keeps the chart layout intact). Confirm wording with Al/Miles.
+// bold: item name shown in bold on Sales Results (Nov 27, 2026).
+export const categoryEs = {
+  'Sterling Silver': 'Plata esterlina',
+  'Fine Art': 'Bellas artes',
+  'Furniture': 'Muebles',
+  'Automobiles': 'Automóviles',
+  'Fine China': 'Porcelana fina',
+  'Baseball Cards': 'Béisbol',
+  'Militaria': 'Militaria',
+  'Vintage Toys': 'Juguetes',
+  'Comic Books': 'Cómics',
+  'Coins': 'Monedas',
+};
+
 export const results = [
-  { category: 'Sterling Silver', item: 'Georg Jensen 78-piece flatware set', estimate: 4250, sold: 6500 },
-  { category: 'Fine Art', item: 'Norman Rockwell oil painting', estimate: 250000, sold: 400000, homepage: 1, bold: true },
-  { category: 'Fine Art', item: 'Alexander Calder gouache, Form', estimate: 40000, sold: 65000, bold: true },
-  { category: 'Fine Art', item: 'Guy Wiggins oil painting', estimate: 18000, sold: 30000, bold: true },
-  { category: 'Furniture', item: 'Baker vintage dining table with 8 chairs', estimate: 1500, sold: 4500, homepage: 3 },
-  { category: 'Furniture', item: 'Ethan Allen country pine table with 8 chairs', estimate: 1500, sold: 3995 },
-  { category: 'Automobiles', item: '1984 Ferrari 308 GTS', estimate: 18000, sold: 34000, homepage: 2 },
-  { category: 'Automobiles', item: '2001 Porsche Carrera 4 Cabriolet', estimate: 14000, sold: 21000 },
-  { category: 'Fine China', item: 'Meissen 91-piece set', estimate: 450, sold: 649 },
-  { category: 'Baseball Cards', item: 'Hank Aaron 1954 card', estimate: 300, sold: 800 },
-  { category: 'Baseball Cards', item: 'Mickey Mantle 1961 Topps All-Star card', estimate: 102, sold: 199 },
-  { category: 'Militaria', item: 'WWII German helmet', estimate: 75, sold: 300 },
-  { category: 'Vintage Toys', item: '1954 Tonka livestock truck', estimate: 135, sold: 273 },
-  { category: 'Comic Books', item: 'Batman #232 (1972)', estimate: 300, sold: 750 },
-  { category: 'Comic Books', item: 'Spider-Man #4 (1963)', estimate: 400, sold: 1000 },
-  { category: 'Coins', item: '18k gold coins (13 states)', estimate: 8000, sold: 12500 },
+  { category: 'Sterling Silver', item: 'Georg Jensen 78-piece flatware set', es: 'Cubiertos Georg Jensen, 78 piezas', estimate: 4250, sold: 6500 },
+  { category: 'Fine Art', item: 'Norman Rockwell oil painting', es: 'Óleo de Norman Rockwell', bold: true, estimate: 250000, sold: 400000, homepage: 1 },
+  { category: 'Fine Art', item: 'Alexander Calder gouache, Form', es: 'Gouache de Alexander Calder, Form', bold: true, estimate: 40000, sold: 65000 },
+  { category: 'Fine Art', item: 'Guy Wiggins oil painting', es: 'Óleo de Guy Wiggins', bold: true, estimate: 18000, sold: 30000 },
+  { category: 'Furniture', item: 'Baker vintage dining table with 8 chairs', es: 'Mesa de comedor Baker con 8 sillas', estimate: 1500, sold: 4500, homepage: 3 },
+  { category: 'Furniture', item: 'Ethan Allen country pine table with 8 chairs', es: 'Mesa de pino Ethan Allen, 8 sillas', estimate: 1500, sold: 3995 },
+  { category: 'Automobiles', item: '1984 Ferrari 308 GTS', es: 'Ferrari 308 GTS (1984)', estimate: 18000, sold: 34000, homepage: 2 },
+  { category: 'Automobiles', item: '2001 Porsche Carrera 4 Cabriolet', es: 'Porsche Carrera 4 Cabriolet (2001)', estimate: 14000, sold: 21000 },
+  { category: 'Fine China', item: 'Meissen 91-piece set', es: 'Vajilla Meissen, 91 piezas', estimate: 450, sold: 649 },
+  { category: 'Baseball Cards', item: 'Hank Aaron 1954 card', es: 'Tarjeta de Hank Aaron (1954)', estimate: 300, sold: 800 },
+  { category: 'Baseball Cards', item: 'Mickey Mantle 1961 Topps All-Star card', es: 'Mickey Mantle Topps All-Star (1961)', estimate: 102, sold: 199 },
+  { category: 'Militaria', item: 'WWII German helmet', es: 'Casco alemán de la II Guerra Mundial', estimate: 75, sold: 300 },
+  { category: 'Vintage Toys', item: '1954 Tonka livestock truck', es: 'Camión de ganado Tonka (1954)', estimate: 135, sold: 273 },
+  { category: 'Comic Books', item: 'Batman #232 (1972)', es: 'Batman #232 (1972)', estimate: 300, sold: 750 },
+  { category: 'Comic Books', item: 'Spider-Man #4 (1963)', es: 'Spider-Man #4 (1963)', estimate: 400, sold: 1000 },
+  { category: 'Coins', item: '18k gold coins (13 states)', es: 'Monedas de oro de 18k (13 estados)', estimate: 8000, sold: 12500 },
 ];
 
 export const usd = (n) => '$' + n.toLocaleString('en-US');

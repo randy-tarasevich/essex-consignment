@@ -1,8 +1,12 @@
 ---
 // Sales results laid out like the original site's "Actual items sold" chart:
 // category (shown once per group) · item · auction estimate · sold by Essex, with dot leaders.
-// Table on laptop and up (1280px+); grouped list on phones, tablets and small laptops.
-import { usd } from '../data/consign.js';
+// Table on laptop and up (1280px+); a compact version of the same chart (category row,
+// item · estimate · sold with dot leaders) on phones, tablets and small laptops (Nov 27, 2026).
+// Spanish (Nov 27, 2026): the chart is translate="no" and carries our own short Spanish
+// (.i18n-en / .i18n-es, toggled by html.lang-es like the nav), so Google Translate can't
+// lengthen labels or reformat prices and break the layout. Prices stay in $1,234 format.
+import { categoryEs } from '../data/consign.js';
 const { items, caption = 'Actual items sold: auction estimate compared with the price Essex Consignment got' } = Astro.props;
 
 // Group consecutive rows by category, keeping the data's order.
@@ -13,24 +17,23 @@ for (const r of items) {
   else groups.push({ category: r.category, rows: [r] });
 }
 ---
-<div>
-  <!-- Phones: grouped list -->
+<div translate="no">
+  <!-- Phones, tablets, small laptops: compact version of the desktop chart -->
   <div class="xl:hidden">
-    <div class="flex items-end justify-between border-b-2 border-ink pb-2 text-base font-black leading-tight text-ink">
-      <span>Actual items sold</span>
-      <span class="text-right">Estimate / Sold</span>
+    <div class="mrow items-end border-b-2 border-ink pb-1.5 text-[0.9375rem] font-black leading-[1.05] tracking-tight text-ink sm:text-lg">
+      <span><span class="i18n-en">Actual<br />items sold</span><span class="i18n-es">Artículos<br />vendidos</span></span>
+      <span class="text-center"><span class="i18n-en">Auction<br />estimate</span><span class="i18n-es">Estimado<br />de subasta</span></span>
+      <span class="text-center"><span class="i18n-en">Sold by<br />Essex</span><span class="i18n-es">Vendido<br />por Essex</span></span>
     </div>
     {groups.map((g) => (
-      <section class="border-b border-ink/15 py-2 last:border-0">
-        <h3 class="text-lg font-black leading-tight text-ink">{g.category}</h3>
-        <ul class="mt-0.5 space-y-1">
+      <section class="pt-2">
+        <h3 class="leader text-base font-black leading-snug tracking-tight text-ink sm:text-lg"><span class="i18n-en">{g.category}</span><span class="i18n-es">{categoryEs[g.category] ?? g.category}</span></h3>
+        <ul class="text-[0.8125rem] leading-snug lining-nums tabular-nums sm:text-base">
           {g.rows.map((r) => (
-            <li class="text-sm">
-              <span class:list={["block", r.bold && "font-extrabold text-ink"]}>{r.item}</span>
-              <span class="mt-0.5 flex justify-between lining-nums tabular-nums">
-                <span class="text-ink/70">Est. {usd(r.estimate)}</span>
-                <span class="font-extrabold text-ink">Sold {usd(r.sold)}</span>
-              </span>
+            <li class="mrow py-px">
+              <span class:list={['leader', r.bold && 'font-extrabold text-ink']}><span aria-hidden="true" class="mr-1 text-[0.5rem]">■</span><span><span class="i18n-en">{r.item}</span><span class="i18n-es">{r.es ?? r.item}</span></span></span>
+              <span class="mprice">$&nbsp;<span class="font-extrabold">{r.estimate.toLocaleString('en-US')}</span></span>
+              <span class="mprice">$&nbsp;<span class="font-extrabold">{r.sold.toLocaleString('en-US')}</span></span>
             </li>
           ))}
         </ul>
@@ -41,12 +44,12 @@ for (const r of items) {
   <!-- Tablet and up: chart-style table -->
   <div class="hidden xl:block">
     <table class="w-full text-left">
-      <caption class="sr-only">{caption}</caption>
+      <caption class="sr-only"><span class="i18n-en">{caption}</span><span class="i18n-es">Artículos vendidos: estimado de subasta comparado con el precio que obtuvo Essex Consignment</span></caption>
       <thead>
         <tr class="border-b-2 border-ink align-bottom text-[1.75rem] font-black leading-[0.95] tracking-tight text-ink">
-          <th scope="col" colspan="2" class="pb-2 pr-24 text-center font-black">Actual<br />items sold</th>
-          <th scope="col" class="w-44 whitespace-nowrap pb-2 text-center font-black">Auction<br />estimate</th>
-          <th scope="col" class="w-44 whitespace-nowrap pb-2 text-center font-black">Sold by Essex<br />Consignment</th>
+          <th scope="col" colspan="2" class="pb-2 pr-24 text-center font-black"><span class="i18n-en">Actual<br />items sold</span><span class="i18n-es">Artículos<br />vendidos</span></th>
+          <th scope="col" class="w-44 whitespace-nowrap pb-2 text-center font-black"><span class="i18n-en">Auction<br />estimate</span><span class="i18n-es">Estimado<br />de subasta</span></th>
+          <th scope="col" class="w-44 whitespace-nowrap pb-2 text-center font-black"><span class="i18n-en">Sold by Essex<br />Consignment</span><span class="i18n-es">Vendido por<br />Essex Consignment</span></th>
         </tr>
       </thead>
       <tbody class="pt-2 text-[1.0625rem] leading-snug lining-nums tabular-nums">
@@ -54,11 +57,11 @@ for (const r of items) {
           <tr>
             {i === 0 && (
               <th scope="rowgroup" rowspan={g.rows.length} class="w-48 pr-2 align-top text-xl font-black leading-snug tracking-tight text-ink">
-                <span class="leader">{g.category}</span>
+                <span class="leader"><span class="i18n-en">{g.category}</span><span class="i18n-es">{categoryEs[g.category] ?? g.category}</span></span>
               </th>
             )}
-            <th scope="row" class:list={["py-px", r.bold ? "font-extrabold text-ink" : "font-normal"]}>
-              <span class="leader"><span aria-hidden="true" class="mr-1.5 text-xs">■</span>{r.item}</span>
+            <th scope="row" class:list={['py-px', r.bold ? 'font-extrabold text-ink' : 'font-normal']}>
+              <span class="leader"><span aria-hidden="true" class="mr-1.5 text-xs">■</span><span class="i18n-en">{r.item}</span><span class="i18n-es">{r.es ?? r.item}</span></span>
             </th>
             <td class="py-px"><span class="price"><span class="dots"></span><span class="amount">$ <span class="font-extrabold text-lg leading-none">{r.estimate.toLocaleString('en-US')}</span></span><span class="dots"></span></span></td>
             <td class="py-px"><span class="price"><span class="dots"></span><span class="amount last">$ <span class="font-extrabold text-lg leading-none">{r.sold.toLocaleString('en-US')}</span></span><span class="flex-1"></span></span></td>
@@ -70,6 +73,11 @@ for (const r of items) {
 </div>
 
 <style>
+  /* Compact chart rows: item · estimate · sold, same dot leaders as desktop. */
+  .mrow { display: grid; grid-template-columns: minmax(0, 1fr) 4.75rem 4.75rem; column-gap: 0; }
+  @media (min-width: 640px) { .mrow { grid-template-columns: minmax(0, 1fr) 7rem 8rem; } }
+  .mprice { display: flex; align-items: baseline; justify-content: flex-end; white-space: nowrap; }
+  .mprice::before { content: ''; flex: 1; min-width: 0.5rem; margin: 0 0.25rem 0 -0.05rem; border-bottom: 2px dotted currentColor; opacity: 0.45; transform: translateY(-0.2em); }
   /* Dot leaders, like the original printed chart. */
   .leader { display: flex; align-items: baseline; gap: 0.25rem; }
   /* Price cells: amount centered under its column heading, dots on both sides so the leaders run unbroken. */
