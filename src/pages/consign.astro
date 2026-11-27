@@ -3,7 +3,7 @@
 // Heading changed to "Other types of items that we accept" (Nov 25).
 // The old page showed the item list as an image; here it's real text styled to match,
 // so it stays sharp, is readable by search engines, and works with the Spanish toggle.
-// Layout (Nov 25, 2026): item list on the left, consignment form card ("Tell us what you have") on the right
+// Layout (Nov 25, 2026): item list on the left, consignment form card ("Show us what you got!") on the right
 // from xl (1280px) up; below that the form stacks under the list and the "Submit Your Items" button jumps to it.
 import BaseLayout from '../layouts/BaseLayout.astro';
 import InquiryForm from '../components/InquiryForm.astro';
@@ -47,7 +47,7 @@ const columns = [wanted.slice(0, half), wanted.slice(half)];
       <!-- Consign With Us form: saves to Shopify tagged "consignor", photos go to R2 -->
       <section id="consign-form" class="mx-auto mt-16 max-w-xl scroll-mt-4 overflow-hidden border border-[#ece8e6] bg-white shadow-[0_1px_2px_rgba(31,26,27,0.06),0_12px_32px_rgba(31,26,27,0.08)] xl:mx-0 xl:mt-0 xl:w-[520px] xl:max-w-none xl:flex-none" aria-labelledby="consign-form-heading">
         <div class="bg-burgundy-800 px-6 py-6 sm:px-7">
-          <h2 id="consign-form-heading" class="text-[1.375rem] font-extrabold text-white">Tell us what you have</h2>
+          <h2 id="consign-form-heading" class="text-[1.375rem] font-extrabold text-white">Show us what you got!</h2>
           <p class="mt-1 text-[0.9375rem] text-[#ecd6da]">Takes about 2 minutes</p>
         </div>
         <div class="p-6 sm:p-7">

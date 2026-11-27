@@ -26,7 +26,7 @@ for (const r of items) {
         <ul class="mt-0.5 space-y-1">
           {g.rows.map((r) => (
             <li class="text-sm">
-              <span class="block">{r.item}</span>
+              <span class:list={["block", r.bold && "font-extrabold text-ink"]}>{r.item}</span>
               <span class="mt-0.5 flex justify-between lining-nums tabular-nums">
                 <span class="text-ink/70">Est. {usd(r.estimate)}</span>
                 <span class="font-extrabold text-ink">Sold {usd(r.sold)}</span>
@@ -57,7 +57,7 @@ for (const r of items) {
                 <span class="leader">{g.category}</span>
               </th>
             )}
-            <th scope="row" class="py-px font-normal">
+            <th scope="row" class:list={["py-px", r.bold ? "font-extrabold text-ink" : "font-normal"]}>
               <span class="leader"><span aria-hidden="true" class="mr-1.5 text-xs">■</span>{r.item}</span>
             </th>
             <td class="py-px"><span class="price"><span class="dots"></span><span class="amount">$ <span class="font-extrabold text-lg leading-none">{r.estimate.toLocaleString('en-US')}</span></span><span class="dots"></span></span></td>

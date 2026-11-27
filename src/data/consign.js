@@ -64,9 +64,9 @@ export const situations = [
 // Miles (Nov 17): one each of Art, Car, Furniture.
 export const results = [
   { category: 'Sterling Silver', item: 'Georg Jensen 78-piece flatware set', estimate: 4250, sold: 6500 },
-  { category: 'Fine Art', item: 'Norman Rockwell oil painting', estimate: 250000, sold: 400000, homepage: 1 },
-  { category: 'Fine Art', item: 'Alexander Calder gouache, Form', estimate: 40000, sold: 65000 },
-  { category: 'Fine Art', item: 'Guy Wiggins oil painting', estimate: 18000, sold: 30000 },
+  { category: 'Fine Art', item: 'Norman Rockwell oil painting', estimate: 250000, sold: 400000, homepage: 1, bold: true },
+  { category: 'Fine Art', item: 'Alexander Calder gouache, Form', estimate: 40000, sold: 65000, bold: true },
+  { category: 'Fine Art', item: 'Guy Wiggins oil painting', estimate: 18000, sold: 30000, bold: true },
   { category: 'Furniture', item: 'Baker vintage dining table with 8 chairs', estimate: 1500, sold: 4500, homepage: 3 },
   { category: 'Furniture', item: 'Ethan Allen country pine table with 8 chairs', estimate: 1500, sold: 3995 },
   { category: 'Automobiles', item: '1984 Ferrari 308 GTS', estimate: 18000, sold: 34000, homepage: 2 },
